@@ -929,6 +929,316 @@
         ],
         "expect_exit": 0
       }
+    },
+    {
+      "id": "real-ext-node-fetch-advisory-before",
+      "source": "https://api.osv.dev/v1/vulns/GHSA-w7rc-rwvf-8q5r",
+      "skill": "external-rule:npm-advisory:node-fetch",
+      "change": "node-fetch did not strip the size option after following a redirect (fixed in 2.6.1).",
+      "expected": "block",
+      "before": {
+        "pass": 0,
+        "total": 1
+      },
+      "after": {
+        "pass": 0,
+        "total": 1
+      },
+      "notes": "a node-fetch pin below 2.6.1 must be blocked",
+      "run": {
+        "type": "node",
+        "script": "benchmarks/real/checks/external-rules.js",
+        "args": [
+          "--rule",
+          "npm-advisory",
+          "--package",
+          "node-fetch",
+          "--fixed",
+          "2.6.1",
+          "--dir",
+          "{root}/benchmarks/real/fixtures/external/npm-advisory-node-fetch/before"
+        ],
+        "expect_exit": 1
+      }
+    },
+    {
+      "id": "real-ext-node-fetch-advisory-after",
+      "source": "https://api.osv.dev/v1/vulns/GHSA-w7rc-rwvf-8q5r",
+      "skill": "external-rule:npm-advisory:node-fetch",
+      "change": "node-fetch did not strip the size option after following a redirect (fixed in 2.6.1).",
+      "expected": "allow",
+      "before": {
+        "pass": 1,
+        "total": 1
+      },
+      "after": {
+        "pass": 1,
+        "total": 1
+      },
+      "notes": "node-fetch 2.6.1 must pass",
+      "run": {
+        "type": "node",
+        "script": "benchmarks/real/checks/external-rules.js",
+        "args": [
+          "--rule",
+          "npm-advisory",
+          "--package",
+          "node-fetch",
+          "--fixed",
+          "2.6.1",
+          "--dir",
+          "{root}/benchmarks/real/fixtures/external/npm-advisory-node-fetch/after"
+        ],
+        "expect_exit": 0
+      }
+    },
+    {
+      "id": "real-ext-json5-advisory-before",
+      "source": "https://api.osv.dev/v1/vulns/GHSA-9c47-m6qq-7p4h",
+      "skill": "external-rule:npm-advisory:json5",
+      "change": "prototype pollution in JSON5 parse (fixed in 2.2.2).",
+      "expected": "block",
+      "before": {
+        "pass": 0,
+        "total": 1
+      },
+      "after": {
+        "pass": 0,
+        "total": 1
+      },
+      "notes": "a json5 pin below 2.2.2 must be blocked",
+      "run": {
+        "type": "node",
+        "script": "benchmarks/real/checks/external-rules.js",
+        "args": [
+          "--rule",
+          "npm-advisory",
+          "--package",
+          "json5",
+          "--fixed",
+          "2.2.2",
+          "--dir",
+          "{root}/benchmarks/real/fixtures/external/npm-advisory-json5/before"
+        ],
+        "expect_exit": 1
+      }
+    },
+    {
+      "id": "real-ext-json5-advisory-after",
+      "source": "https://api.osv.dev/v1/vulns/GHSA-9c47-m6qq-7p4h",
+      "skill": "external-rule:npm-advisory:json5",
+      "change": "prototype pollution in JSON5 parse (fixed in 2.2.2).",
+      "expected": "allow",
+      "before": {
+        "pass": 1,
+        "total": 1
+      },
+      "after": {
+        "pass": 1,
+        "total": 1
+      },
+      "notes": "json5 2.2.2 must pass",
+      "run": {
+        "type": "node",
+        "script": "benchmarks/real/checks/external-rules.js",
+        "args": [
+          "--rule",
+          "npm-advisory",
+          "--package",
+          "json5",
+          "--fixed",
+          "2.2.2",
+          "--dir",
+          "{root}/benchmarks/real/fixtures/external/npm-advisory-json5/after"
+        ],
+        "expect_exit": 0
+      }
+    },
+    {
+      "id": "real-ext-semver-advisory-before",
+      "source": "https://api.osv.dev/v1/vulns/GHSA-c2qf-rxjj-qqgw",
+      "skill": "external-rule:npm-advisory:semver",
+      "change": "regular expression denial of service in semver (fixed in 7.5.2).",
+      "expected": "block",
+      "before": {
+        "pass": 0,
+        "total": 1
+      },
+      "after": {
+        "pass": 0,
+        "total": 1
+      },
+      "notes": "a semver pin below 7.5.2 must be blocked",
+      "run": {
+        "type": "node",
+        "script": "benchmarks/real/checks/external-rules.js",
+        "args": [
+          "--rule",
+          "npm-advisory",
+          "--package",
+          "semver",
+          "--fixed",
+          "7.5.2",
+          "--dir",
+          "{root}/benchmarks/real/fixtures/external/npm-advisory-semver/before"
+        ],
+        "expect_exit": 1
+      }
+    },
+    {
+      "id": "real-ext-semver-advisory-after",
+      "source": "https://api.osv.dev/v1/vulns/GHSA-c2qf-rxjj-qqgw",
+      "skill": "external-rule:npm-advisory:semver",
+      "change": "regular expression denial of service in semver (fixed in 7.5.2).",
+      "expected": "allow",
+      "before": {
+        "pass": 1,
+        "total": 1
+      },
+      "after": {
+        "pass": 1,
+        "total": 1
+      },
+      "notes": "semver 7.5.2 must pass",
+      "run": {
+        "type": "node",
+        "script": "benchmarks/real/checks/external-rules.js",
+        "args": [
+          "--rule",
+          "npm-advisory",
+          "--package",
+          "semver",
+          "--fixed",
+          "7.5.2",
+          "--dir",
+          "{root}/benchmarks/real/fixtures/external/npm-advisory-semver/after"
+        ],
+        "expect_exit": 0
+      }
+    },
+    {
+      "id": "real-ext-tough-cookie-advisory-before",
+      "source": "https://api.osv.dev/v1/vulns/GHSA-72xf-g2v4-qvf3",
+      "skill": "external-rule:npm-advisory:tough-cookie",
+      "change": "prototype pollution in tough-cookie (fixed in 4.1.3).",
+      "expected": "block",
+      "before": {
+        "pass": 0,
+        "total": 1
+      },
+      "after": {
+        "pass": 0,
+        "total": 1
+      },
+      "notes": "a tough-cookie pin below 4.1.3 must be blocked",
+      "run": {
+        "type": "node",
+        "script": "benchmarks/real/checks/external-rules.js",
+        "args": [
+          "--rule",
+          "npm-advisory",
+          "--package",
+          "tough-cookie",
+          "--fixed",
+          "4.1.3",
+          "--dir",
+          "{root}/benchmarks/real/fixtures/external/npm-advisory-tough-cookie/before"
+        ],
+        "expect_exit": 1
+      }
+    },
+    {
+      "id": "real-ext-tough-cookie-advisory-after",
+      "source": "https://api.osv.dev/v1/vulns/GHSA-72xf-g2v4-qvf3",
+      "skill": "external-rule:npm-advisory:tough-cookie",
+      "change": "prototype pollution in tough-cookie (fixed in 4.1.3).",
+      "expected": "allow",
+      "before": {
+        "pass": 1,
+        "total": 1
+      },
+      "after": {
+        "pass": 1,
+        "total": 1
+      },
+      "notes": "tough-cookie 4.1.3 must pass",
+      "run": {
+        "type": "node",
+        "script": "benchmarks/real/checks/external-rules.js",
+        "args": [
+          "--rule",
+          "npm-advisory",
+          "--package",
+          "tough-cookie",
+          "--fixed",
+          "4.1.3",
+          "--dir",
+          "{root}/benchmarks/real/fixtures/external/npm-advisory-tough-cookie/after"
+        ],
+        "expect_exit": 0
+      }
+    },
+    {
+      "id": "real-ext-cross-spawn-advisory-before",
+      "source": "https://api.osv.dev/v1/vulns/GHSA-3xgq-45jj-v275",
+      "skill": "external-rule:npm-advisory:cross-spawn",
+      "change": "regular expression denial of service in cross-spawn (fixed in 7.0.5).",
+      "expected": "block",
+      "before": {
+        "pass": 0,
+        "total": 1
+      },
+      "after": {
+        "pass": 0,
+        "total": 1
+      },
+      "notes": "a cross-spawn pin below 7.0.5 must be blocked",
+      "run": {
+        "type": "node",
+        "script": "benchmarks/real/checks/external-rules.js",
+        "args": [
+          "--rule",
+          "npm-advisory",
+          "--package",
+          "cross-spawn",
+          "--fixed",
+          "7.0.5",
+          "--dir",
+          "{root}/benchmarks/real/fixtures/external/npm-advisory-cross-spawn/before"
+        ],
+        "expect_exit": 1
+      }
+    },
+    {
+      "id": "real-ext-cross-spawn-advisory-after",
+      "source": "https://api.osv.dev/v1/vulns/GHSA-3xgq-45jj-v275",
+      "skill": "external-rule:npm-advisory:cross-spawn",
+      "change": "regular expression denial of service in cross-spawn (fixed in 7.0.5).",
+      "expected": "allow",
+      "before": {
+        "pass": 1,
+        "total": 1
+      },
+      "after": {
+        "pass": 1,
+        "total": 1
+      },
+      "notes": "cross-spawn 7.0.5 must pass",
+      "run": {
+        "type": "node",
+        "script": "benchmarks/real/checks/external-rules.js",
+        "args": [
+          "--rule",
+          "npm-advisory",
+          "--package",
+          "cross-spawn",
+          "--fixed",
+          "7.0.5",
+          "--dir",
+          "{root}/benchmarks/real/fixtures/external/npm-advisory-cross-spawn/after"
+        ],
+        "expect_exit": 0
+      }
     }
   ]
 }

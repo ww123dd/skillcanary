@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.16.0
+
+- External regression set grown to 20 cases (36 -> 46 benchmark cases): five more published advisories with the fixed versions read from the OSV record rather than copied by hand - node-fetch 2.6.1, json5 2.2.2, semver 7.5.2, tough-cookie 4.1.3, cross-spawn 7.0.5 - each paired (before = must block, after = must pass).
+- `external-rules.js` gained a generic `npm-advisory` rule that takes the package and the fixed version from the case, so the checker holds no hand-copied advisory data.
+
 ## 0.15.0
 
 - Started the externally sourced regression set: ten cases across five upstream changes, each citing a public source and each paired (before = must block, after = must pass): GitHub Actions Node16-era pins, the deprecated artifact action v3, Node 18 end of life (nodejs.org release schedule), and two published advisories with their fixed versions taken from OSV (lodash 4.17.21, minimist 1.2.6).

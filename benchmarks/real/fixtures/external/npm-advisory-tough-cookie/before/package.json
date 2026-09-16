@@ -1,0 +1,6 @@
+{
+  "name": "skill",
+  "dependencies": {
+    "tough-cookie": "4.1.2"
+  }
+}

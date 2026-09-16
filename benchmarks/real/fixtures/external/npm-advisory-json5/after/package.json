@@ -1,0 +1,6 @@
+{
+  "name": "skill",
+  "dependencies": {
+    "json5": "2.2.2"
+  }
+}

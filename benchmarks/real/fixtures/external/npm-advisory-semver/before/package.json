@@ -1,0 +1,6 @@
+{
+  "name": "skill",
+  "dependencies": {
+    "semver": "7.5.1"
+  }
+}

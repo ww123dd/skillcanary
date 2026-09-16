@@ -61,6 +61,19 @@ const RULES = {
     const v = versionOf(spec);
     if (v && lt(v, [1, 2, 6])) block('minimist ' + spec + ' predates the advisory fix 1.2.6');
     allow('minimist is at or above the fixed version: ' + spec);
+  },
+  'npm-advisory': function () {
+    const pi = process.argv.indexOf('--package');
+    const fi = process.argv.indexOf('--fixed');
+    const name = pi >= 0 ? process.argv[pi + 1] : null;
+    const fixed = fi >= 0 ? process.argv[fi + 1] : null;
+    if (!name || !fixed) block('--package and --fixed are required for npm-advisory');
+    const spec = deps(dir)[name];
+    if (!spec) allow(name + ' is not a dependency');
+    const v = versionOf(spec);
+    const f = versionOf(fixed);
+    if (v && f && lt(v, f)) block(name + ' ' + spec + ' predates the advisory fix ' + fixed);
+    allow(name + ' is at or above the advisory fix ' + fixed + ': ' + spec);
   }
 };
 if (!RULES[rule]) block('unknown rule: ' + rule);
