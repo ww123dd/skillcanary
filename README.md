@@ -1,15 +1,28 @@
 # SkillCanary
 
-**没有 case 与证据，改动不许合。**
-**The change gate for agent skills: no case, no evidence, no merge.**
+**Agent / Skill 的错题本：每一次改动都要结账 —— 要么这道题真的关掉了，要么不许合。**
+**The mistake book for agent skills: every change settles a case, or it does not land.**
 
-你改了一条规则、一个提示词或一个工具描述。CI 绿了，PR 合了。三天后同一个问题又回来了 —— 而且没人说得清：是规则从一开始就没生效，是模型换了，还是上次那次「修好了」本来就只是碰巧。
+同一个失败会换一个新名字回来。你改了一条规则，CI 绿了，PR 合了；三天后它又出现 —— 这次你分不清：是规则从一开始就没生效，是模型换了，还是上次那次「修好了」本来就只是碰巧。
 
-SkillCanary 把这个问题变成机械事实：**真实失败 → case → 证据 → 门禁 → 结果 → 策略**。门禁按证据和哈希下结论，不按感觉；没有可测的转变，改动不允许落地。
+SkillCanary 给 agent / skill 的每一次自进化建一本错题本：
 
-它不评模型，也不当 runner、扫描器或注册表 —— 那些工具回答「能不能跑」「安不安全」「怎么分发」。它只回答一句：**这个改动凭什么可以合，下一步该改什么？**
+```text
+真实失败  →  抄成 case  →  门禁判分  →  记录结果  →  下一步该改哪
+            (可测的转变)   (证据+哈希)   (state/action/outcome)
+```
 
-每修一个 bug 就加一条规则，是行业默认动作；规则越多越没人敢删，同一个失败换个名字回来。SkillCanary 给这套循环记三笔账 —— **纠正、返工、工具错误预算** —— 预算超了就停手，而不是继续加规则。
+- **抄题** —— 真实失败必须先变成 case 或确定性目标，才允许动 skill；没有题目，就没有资格改。
+- **判分** —— 改动要在同一道题上重测：证据带 provenance 和哈希，Pass^k 看它稳不稳，而不是看一次运气。
+- **防抄答案** —— 隐藏测试、参考答案收起、污点扫描：抄答案式通过不算通过。
+- **记账** —— 纠正 / 返工 / 工具错误三笔预算；债超了就停手，而不是继续加规则。
+- **复习** —— state / action / outcome 进历史，policy 告诉你下一步该改哪，而不是从记忆重建。
+
+它不评模型，也不当 runner、扫描器或注册表 —— 那些工具回答「能不能跑」「安不安全」「怎么分发」。它只回答一句：
+
+> **这次改动，是真的把这道题做对了，还是只是把答案改得像对的？**
+
+它不声称「这个 skill 普遍更好了」—— 那种话没有外部事实可以重算。它只证明：**这道题关掉了，别的题没有因此变坏。**
 
 30 秒看到结论：
 
@@ -20,19 +33,23 @@ cd skillcanary && node bin/skillcanary.js doctor examples/basic-skill
 
 ---
 
-You changed one rule, one prompt or one tool description. CI went green, the PR merged. Three days later the same failure is back — and nobody can say whether the rule never worked, the model changed, or last time was luck.
+**The mistake book for agent skills: every change settles a case, or it does not land.**
 
-SkillCanary turns that into a mechanical fact: **real failure → case → evidence → gate → outcome → policy**. The gate concludes from evidence and hashes, not from feeling; without a measurable transition, the change does not land.
+The same failure comes back under a new name. You changed one rule, CI went green, the PR merged; three days later it is back — and you cannot tell whether the rule never worked, the model changed, or last time was luck.
 
-It is not an agent runner, not a security scanner and not a registry. Those tools answer *can it run*, *is it safe* and *how do we distribute it*. SkillCanary answers: **may this change land, and what should we try next?**
+SkillCanary keeps a mistake book for every self-evolution step of an agent or skill:
 
-```text
-real failure -> case -> evidence -> gate -> outcome -> policy
-```
+- **Write the problem down** — a real failure must become a case or a deterministic target before the skill may change.
+- **Grade the same problem** — the change is re-tested on that case with provenance and hashes; pass^k says whether it holds up, not whether it was lucky once.
+- **Block copying answers** — hidden tests, stashed solutions and taint scanning: passing by copying is not passing.
+- **Keep the ledger** — correction, rework and tool-error budgets; when the debt is over budget you stop, instead of adding another rule.
+- **Review** — state / action / outcome go into history and policy tells you what to fix next, instead of rebuilding from memory.
 
-It is not an agent runner, not a security scanner and not a registry. Those tools answer *can it run*, *is it safe* and *how do we distribute it*. SkillCanary answers:
+It does not rate models and is not a runner, scanner or registry. Those answer *can it run*, *is it safe*, *how do we distribute it*. It answers one thing:
 
-> **May this agent change land, and what should we try next?**
+> **Did this change actually solve the case — or did it just make the answer look right?**
+
+It does not claim the skill is now better in general: that has no external fact to recompute. It proves the case is closed and nothing else regressed.
 
 ## The pain it targets
 
