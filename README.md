@@ -1,33 +1,36 @@
 # SkillCanary
 
-**每次失败，不是在 skill 里再加一条规则，而是把它变成一道以后每次都要重考的题。**
+**规则告诉你这次这么改；机制要求你以后每次都还得这么过。SkillCanary 做的是后者。**
 
-同一个问题会换个名字回来。你把这次的答案写进规则里，下次它换个样子出现，那条规则就没用了。规则越堆越多，没人敢删，也没人说得清哪条真的在起作用。
+同一个问题会换个样子回来。你把这次的答案写成一条规则，下次它换个形态，那条规则就不管用了。更麻烦的是规则没有判据：没人说得清哪条真的在起作用，于是没人敢删，只增不减，最后谁都不敢动。
 
-规则说「这次这么改」，机制说「以后每次都还得这么过」。SkillCanary 做的是后者：把失败变成一道题，把判分做成一台机器。
+机制不一样。它把失败变成一道题，让以后的每次改动都回来重考；这道题是可测的，判分靠能从外部重新算出来的事实，不靠谁的一句说明。
 
-真实失败先抄成一道题，题目是一次可测的转变；以后每次改动都要重做这道题，答案要能从外部重新算出来。这道题关掉了才算过，别的题没被弄坏才算过。
+所以它对每一次改动只问四句：
 
-它管的不是「这次改得对不对」，是「以后每次都还得对」。
+1. **你在回答哪道题？** 答不上来，这就不是修复，只是一次编辑。
+2. **改之前，它是坏的吗？证据在哪？** 没有 baseline，你分不清「修好了」和「本来就没坏」。
+3. **改之后，是同一道题、同一套判据、重新跑出来的吗？别的题有没有被弄坏？** 换题、换判据、只跑一次，三个里踩中任何一个，这次通过都不算数。
+4. **三个月后这个结论还算数吗？** 判据漂了（用例改了、runner 换了、契约变了），旧结论就得作废，否则就是拿过期的事实给自己盖章。
 
-它不评模型，也不管你怎么跑。它只认能从外部重算的事实：算不出来，就不算通过。所以它也不会说「这个 skill 变好了」，它只会说这道题关掉了、别的题没被弄坏。
+四句都过了，才算这次改动有用。它不评模型，也不管你怎么跑——算不出来的事实，就不算通过。它也不会说「这个 skill 变好了」，只会说这道题关掉了、别的题没被弄坏。
 
-30 秒：
+30 秒看它怎么问：
 
 ```bash
 git clone https://gitee.com/review-for-qing-lazy/skillcanary
 cd skillcanary && node bin/skillcanary.js doctor examples/basic-skill
 ```
 
-第一次跑，它就会告诉你：还有几道题没关，错误预算还剩多少，下一步该改哪里。
+最后一句也写在这儿：机制自己也会腐化。如果一条机制的维护成本已经高过它挡下的问题，它该退役，而不是继续加补丁。
 
 ---
 
-Do not answer a failure with another rule. Turn it into a case the skill has to pass again.
+A rule tells you how to change it this time. A mechanism says you still have to pass this next time — and makes that pass/fail externally recomputable.
 
-A rule says "change it like this". A mechanism says "you still have to pass this next time". SkillCanary builds the second one: the failure becomes a case, and the grading becomes a machine. The case has to close on externally recomputable evidence, and nothing else may regress.
+The same failure comes back in a different shape, so a rule written for the old shape stops working. Worse, rules carry no verdict: nobody can tell which one is doing the work, so nobody dares delete one, and the list only grows.
 
-It does not rate models or run them. If the fact cannot be recomputed from outside, it does not count as passing.
+SkillCanary turns a failure into a case instead, and asks four questions of every change: which case does this answer; was the case failing before, and where is that evidence; does it pass the same case under the same criteria on a re-run, without breaking the others; and will that conclusion still hold when the criteria drift? Pass all four and the change counts. It does not rate models or run them, and it will not claim the skill got better in general — only that this case closed and nothing else regressed.
 
 ## The pain it targets
 
