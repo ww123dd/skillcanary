@@ -26,13 +26,13 @@
 
 30 秒先看它能用，再看你还缺什么：
 
-```
-
 接上唯一的自动采集器（默认 dry-run，不写任何东西）：
 
 ```bash
 skillcanary hook install --host claude          # 先看它会写什么
 skillcanary hook install --host claude --write  # 备份后合并；再跑一次不会重复
+```
+
 ```bash
 # 1) 先看它工作：红 -> 绿 -> 再红（clone 下来跑，不装进系统）
 git clone https://gitee.com/review-for-qing-lazy/skillcanary
