@@ -25,8 +25,12 @@
 30 秒看它怎么问：
 
 ```bash
+# 不用 clone 也能试（不会装进系统）
+npx --yes git+https://gitee.com/review-for-qing-lazy/skillcanary.git doctor <你的 skill 目录>
+
+# 想看红 -> 绿 -> 再红，加一次漂移检测
 git clone https://gitee.com/review-for-qing-lazy/skillcanary
-cd skillcanary && node bin/skillcanary.js doctor examples/basic-skill
+cd skillcanary && npm run demo:case
 ```
 
 ---
