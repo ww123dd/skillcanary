@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.15.0
+
+- Started the externally sourced regression set: ten cases across five upstream changes, each citing a public source and each paired (before = must block, after = must pass): GitHub Actions Node16-era pins, the deprecated artifact action v3, Node 18 end of life (nodejs.org release schedule), and two published advisories with their fixed versions taken from OSV (lodash 4.17.21, minimist 1.2.6).
+- `benchmarks/real/checks/external-rules.js` implements those rules against fixtures under `benchmarks/real/fixtures/external/`, and the README benchmark count is now enforced at 36.
+
 ## 0.14.0
 
 - Added `skillcanary decision record`: it writes a `skillcanary/decision/v1` row (with reward vector and evidence hashes) from a real action. `--quote` is required and stored, so the tool can never invent the operator decision; without the words nothing is recorded.

@@ -1,0 +1,6 @@
+{
+  "name": "skill",
+  "engines": {
+    "node": ">=18 <19"
+  }
+}

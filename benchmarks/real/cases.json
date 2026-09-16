@@ -659,6 +659,276 @@
         "script": "benchmarks/real/checks/readme-benchmark-count.js",
         "expect_exit": 0
       }
+    },
+    {
+      "id": "real-ext-actions-node16-before",
+      "source": "https://github.blog/changelog/2023-06-13-github-actions-all-actions-will-run-on-node16-instead-of-node12-by-default/",
+      "skill": "external-rule:gha-node16-deprecated",
+      "change": "Upstream runs actions on Node 20 and deprecated the v3 majors.",
+      "expected": "block",
+      "before": {
+        "pass": 0,
+        "total": 1
+      },
+      "after": {
+        "pass": 0,
+        "total": 1
+      },
+      "notes": "actions/checkout@v3 must be blocked.",
+      "run": {
+        "type": "node",
+        "script": "benchmarks/real/checks/external-rules.js",
+        "args": [
+          "--rule",
+          "gha-node16-deprecated",
+          "--dir",
+          "{root}/benchmarks/real/fixtures/external/gha-node16-deprecated/before"
+        ],
+        "expect_exit": 1
+      }
+    },
+    {
+      "id": "real-ext-actions-node16-after",
+      "source": "https://github.blog/changelog/2023-06-13-github-actions-all-actions-will-run-on-node16-instead-of-node12-by-default/",
+      "skill": "external-rule:gha-node16-deprecated",
+      "change": "Action pin raised to the current major.",
+      "expected": "allow",
+      "before": {
+        "pass": 1,
+        "total": 1
+      },
+      "after": {
+        "pass": 1,
+        "total": 1
+      },
+      "notes": "actions/checkout@v4 must pass.",
+      "run": {
+        "type": "node",
+        "script": "benchmarks/real/checks/external-rules.js",
+        "args": [
+          "--rule",
+          "gha-node16-deprecated",
+          "--dir",
+          "{root}/benchmarks/real/fixtures/external/gha-node16-deprecated/after"
+        ],
+        "expect_exit": 0
+      }
+    },
+    {
+      "id": "real-ext-artifact-v3-before",
+      "source": "https://github.blog/changelog/2024-04-16-deprecation-notice-v3-of-the-artifact-actions/",
+      "skill": "external-rule:gha-artifact-v3",
+      "change": "Artifact actions v3 are deprecated.",
+      "expected": "block",
+      "before": {
+        "pass": 0,
+        "total": 1
+      },
+      "after": {
+        "pass": 0,
+        "total": 1
+      },
+      "notes": "upload-artifact@v3 must be blocked.",
+      "run": {
+        "type": "node",
+        "script": "benchmarks/real/checks/external-rules.js",
+        "args": [
+          "--rule",
+          "gha-artifact-v3",
+          "--dir",
+          "{root}/benchmarks/real/fixtures/external/gha-artifact-v3/before"
+        ],
+        "expect_exit": 1
+      }
+    },
+    {
+      "id": "real-ext-artifact-v3-after",
+      "source": "https://github.blog/changelog/2024-04-16-deprecation-notice-v3-of-the-artifact-actions/",
+      "skill": "external-rule:gha-artifact-v3",
+      "change": "Artifact action raised to v4.",
+      "expected": "allow",
+      "before": {
+        "pass": 1,
+        "total": 1
+      },
+      "after": {
+        "pass": 1,
+        "total": 1
+      },
+      "notes": "upload-artifact@v4 must pass.",
+      "run": {
+        "type": "node",
+        "script": "benchmarks/real/checks/external-rules.js",
+        "args": [
+          "--rule",
+          "gha-artifact-v3",
+          "--dir",
+          "{root}/benchmarks/real/fixtures/external/gha-artifact-v3/after"
+        ],
+        "expect_exit": 0
+      }
+    },
+    {
+      "id": "real-ext-node-eol-before",
+      "source": "https://nodejs.org/en/about/previous-releases",
+      "skill": "external-rule:node-eol",
+      "change": "Node 18 reached end of life.",
+      "expected": "block",
+      "before": {
+        "pass": 0,
+        "total": 1
+      },
+      "after": {
+        "pass": 0,
+        "total": 1
+      },
+      "notes": "engines.node starting at 18 must be blocked.",
+      "run": {
+        "type": "node",
+        "script": "benchmarks/real/checks/external-rules.js",
+        "args": [
+          "--rule",
+          "node-eol",
+          "--dir",
+          "{root}/benchmarks/real/fixtures/external/node-eol/before"
+        ],
+        "expect_exit": 1
+      }
+    },
+    {
+      "id": "real-ext-node-eol-after",
+      "source": "https://nodejs.org/en/about/previous-releases",
+      "skill": "external-rule:node-eol",
+      "change": "Runtime floor raised to a supported major.",
+      "expected": "allow",
+      "before": {
+        "pass": 1,
+        "total": 1
+      },
+      "after": {
+        "pass": 1,
+        "total": 1
+      },
+      "notes": "engines.node >=20 must pass.",
+      "run": {
+        "type": "node",
+        "script": "benchmarks/real/checks/external-rules.js",
+        "args": [
+          "--rule",
+          "node-eol",
+          "--dir",
+          "{root}/benchmarks/real/fixtures/external/node-eol/after"
+        ],
+        "expect_exit": 0
+      }
+    },
+    {
+      "id": "real-ext-lodash-advisory-before",
+      "source": "https://api.osv.dev/v1/vulns/GHSA-35jh-r3h4-6jhm",
+      "skill": "external-rule:npm-lodash-advisory",
+      "change": "Command injection in lodash, fixed in 4.17.21.",
+      "expected": "block",
+      "before": {
+        "pass": 0,
+        "total": 1
+      },
+      "after": {
+        "pass": 0,
+        "total": 1
+      },
+      "notes": "A lodash pin below the fix must be blocked.",
+      "run": {
+        "type": "node",
+        "script": "benchmarks/real/checks/external-rules.js",
+        "args": [
+          "--rule",
+          "npm-lodash-advisory",
+          "--dir",
+          "{root}/benchmarks/real/fixtures/external/npm-lodash-advisory/before"
+        ],
+        "expect_exit": 1
+      }
+    },
+    {
+      "id": "real-ext-lodash-advisory-after",
+      "source": "https://api.osv.dev/v1/vulns/GHSA-35jh-r3h4-6jhm",
+      "skill": "external-rule:npm-lodash-advisory",
+      "change": "lodash raised to the fixed version.",
+      "expected": "allow",
+      "before": {
+        "pass": 1,
+        "total": 1
+      },
+      "after": {
+        "pass": 1,
+        "total": 1
+      },
+      "notes": "lodash 4.17.21 must pass.",
+      "run": {
+        "type": "node",
+        "script": "benchmarks/real/checks/external-rules.js",
+        "args": [
+          "--rule",
+          "npm-lodash-advisory",
+          "--dir",
+          "{root}/benchmarks/real/fixtures/external/npm-lodash-advisory/after"
+        ],
+        "expect_exit": 0
+      }
+    },
+    {
+      "id": "real-ext-minimist-advisory-before",
+      "source": "https://api.osv.dev/v1/vulns/GHSA-xvch-5gv4-984h",
+      "skill": "external-rule:npm-minimist-advisory",
+      "change": "Prototype pollution in minimist, fixed in 1.2.6.",
+      "expected": "block",
+      "before": {
+        "pass": 0,
+        "total": 1
+      },
+      "after": {
+        "pass": 0,
+        "total": 1
+      },
+      "notes": "A minimist pin below the fix must be blocked.",
+      "run": {
+        "type": "node",
+        "script": "benchmarks/real/checks/external-rules.js",
+        "args": [
+          "--rule",
+          "npm-minimist-advisory",
+          "--dir",
+          "{root}/benchmarks/real/fixtures/external/npm-minimist-advisory/before"
+        ],
+        "expect_exit": 1
+      }
+    },
+    {
+      "id": "real-ext-minimist-advisory-after",
+      "source": "https://api.osv.dev/v1/vulns/GHSA-xvch-5gv4-984h",
+      "skill": "external-rule:npm-minimist-advisory",
+      "change": "minimist raised to the fixed version.",
+      "expected": "allow",
+      "before": {
+        "pass": 1,
+        "total": 1
+      },
+      "after": {
+        "pass": 1,
+        "total": 1
+      },
+      "notes": "minimist 1.2.6 must pass.",
+      "run": {
+        "type": "node",
+        "script": "benchmarks/real/checks/external-rules.js",
+        "args": [
+          "--rule",
+          "npm-minimist-advisory",
+          "--dir",
+          "{root}/benchmarks/real/fixtures/external/npm-minimist-advisory/after"
+        ],
+        "expect_exit": 0
+      }
     }
   ]
 }

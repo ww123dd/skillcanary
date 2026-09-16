@@ -1,0 +1,6 @@
+{
+  "name": "skill",
+  "dependencies": {
+    "minimist": "1.2.5"
+  }
+}
