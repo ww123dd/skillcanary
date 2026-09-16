@@ -1,10 +1,30 @@
 # SkillCanary
 
-**The control plane for reliable agent changes.**
+**没有 case 与证据，改动不许合。**
+**The change gate for agent skills: no case, no evidence, no merge.**
 
-Agents do not fail because teams lack another prompt linter. They fail because a real failure is never turned into a case, a change cannot prove what it fixed, tools drift, permissions are too broad, and the next iteration starts from memory instead of evidence.
+你改了一条规则、一个提示词或一个工具描述。CI 绿了，PR 合了。三天后同一个问题又回来了 —— 而且没人说得清：是规则从一开始就没生效，是模型换了，还是上次那次「修好了」本来就只是碰巧。
 
-SkillCanary sits between agent runners, MCP servers and CI. It turns real failures into evidence, gates the change, stores the outcome and recommends what to try next.
+SkillCanary 把这个问题变成机械事实：**真实失败 → case → 证据 → 门禁 → 结果 → 策略**。门禁按证据和哈希下结论，不按感觉；没有可测的转变，改动不允许落地。
+
+它不评模型，也不当 runner、扫描器或注册表 —— 那些工具回答「能不能跑」「安不安全」「怎么分发」。它只回答一句：**这个改动凭什么可以合，下一步该改什么？**
+
+每修一个 bug 就加一条规则，是行业默认动作；规则越多越没人敢删，同一个失败换个名字回来。SkillCanary 给这套循环记三笔账 —— **纠正、返工、工具错误预算** —— 预算超了就停手，而不是继续加规则。
+
+30 秒看到结论：
+
+`ash
+git clone https://gitee.com/review-for-qing-lazy/skillcanary
+cd skillcanary && node bin/skillcanary.js doctor examples/basic-skill
+`
+
+---
+
+You changed one rule, one prompt or one tool description. CI went green, the PR merged. Three days later the same failure is back — and nobody can say whether the rule never worked, the model changed, or last time was luck.
+
+SkillCanary turns that into a mechanical fact: **real failure → case → evidence → gate → outcome → policy**. The gate concludes from evidence and hashes, not from feeling; without a measurable transition, the change does not land.
+
+It is not an agent runner, not a security scanner and not a registry. Those tools answer *can it run*, *is it safe* and *how do we distribute it*. SkillCanary answers: **may this change land, and what should we try next?**
 
 ```text
 real failure -> case -> evidence -> gate -> outcome -> policy
