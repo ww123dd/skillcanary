@@ -1,0 +1,8 @@
+{
+  "window": 20,
+  "max": {
+    "user_correction_count": 2,
+    "rework_turns": 3,
+    "tool_error_count": 5
+  }
+}

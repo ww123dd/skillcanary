@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.9.2
+
+- Fixed the suite version assertion: it reads `package.json` instead of a literal, so a patch bump cannot break `npm test` on a clean clone.
+
 ## 0.9.1
 
 - Added `skillcanary hook install [--host codex|claude] [--write]`: the first action after installing. Dry run by default; `--write` backs the host file up, merges the four events (session start, pre-tool, stop, session end) and creates `.skillcanary/hook-rules.json`. Existing host hooks survive the merge and a second run is a no-op.

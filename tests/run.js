@@ -253,7 +253,7 @@ r = run(['doctor', path.join(root, 'examples', 'basic-skill'), '--json']);
 must(r.code === 0 && /skillcanary\/doctor\/v1/.test(r.out), 'doctor should produce a structured report\n' + r.out + r.err);
 
 r = run(['version']);
-must(r.code === 0 && r.out.trim() === '0.9.0', 'version should work\n' + r.out + r.err);
+must(r.code === 0 && r.out.trim() === require('../package.json').version, 'version should work\n' + r.out + r.err);
 
 async function testMockComment() {
   const requests = [];

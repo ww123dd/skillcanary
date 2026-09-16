@@ -1,0 +1,9 @@
+{
+  "preTool": [
+    {
+      "id": "example-deny-rule",
+      "pattern": "replace-with-a-local-pattern",
+      "reason": "Replace this example with a local guard rule."
+    }
+  ]
+}

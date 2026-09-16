@@ -1,0 +1,25 @@
+{
+  "schema_version": "skillcanary/change/v1",
+  "id": "2026-09-14-fix-example",
+  "skill": "example-skill",
+  "target": {
+    "kind": "case",
+    "id": "c01"
+  },
+  "expected_transition": "FAIL->PASS",
+  "reason": "Describe the observed failure and why this change is the smallest fix.",
+  "decision": "Describe the decision this change is supposed to change.",
+  "production_change": true,
+  "prediction": {
+    "fix": [
+      "c01"
+    ],
+    "regress_risk": [
+      "c02"
+    ]
+  },
+  "budget": {
+    "repeat": 3,
+    "max_runs": 9
+  }
+}
