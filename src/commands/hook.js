@@ -2,6 +2,7 @@
 
 const fs = require('fs');
 const path = require('path');
+const os = require('os');
 const { parseArgs, printJson } = require('../lib/util');
 
 function readStdin() {
@@ -84,10 +85,108 @@ function doctor(baseDir) {
   return { file: loaded.file, rules: loaded.rules.length, errors, warnings, ok: errors.length === 0 };
 }
 
+function codexDispatcher() {
+  return [
+    "'use strict';",
+    "const fs = require('fs');",
+    "const { spawnSync } = require('child_process');",
+    "const event = process.argv[2] || 'session-start';",
+    "let input = '';",
+    "try { input = fs.readFileSync(0, 'utf8'); } catch (_) {}",
+    "const result = spawnSync(process.execPath, [require('path').resolve(__dirname, '..', '..', 'bin', 'skillcanary.js'), 'hook', event], { input: input, encoding: 'utf8' });",
+    "process.stdout.write(result.stdout || '{}');",
+    "process.exit(0);",
+    ''
+  ].join('\\n');
+}
+function skillcanaryBin() { return path.resolve(__dirname, "..", "..", "bin", "skillcanary.js"); }
+function commandFor(event) { return "node \"" + skillcanaryBin() + "\" hook " + event; }
+function hostFile(host) {
+  if (host === 'claude') return path.join(os.homedir(), '.claude', 'settings.json');
+  if (host === 'codex') return path.join(os.homedir(), '.codex', 'hooks', 'skillcanary-hook.js');
+  return null;
+}
+function claudeWiring() {
+  const matcher = "Bash|Read|Write|Edit|Grep|Glob|NotebookEdit|mcp__.*";
+  return {
+    SessionStart: [{ hooks: [{ type: 'command', command: commandFor('session-start') }] }],
+    PreToolUse: [{ matcher: matcher, hooks: [{ type: 'command', command: commandFor('pre-tool') }] }],
+    Stop: [{ hooks: [{ type: 'command', command: commandFor('stop') }] }],
+    SessionEnd: [{ hooks: [{ type: 'command', command: commandFor('session-end') }] }]
+  };
+}
+function ensureRules(dir) {
+  const rules = path.join(dir, '.skillcanary', 'hook-rules.json');
+  if (fs.existsSync(rules)) return { file: rules, created: false };
+  const example = path.join(dir, '.skillcanary', 'hook-rules.example.json');
+  fs.mkdirSync(path.dirname(rules), { recursive: true });
+  if (fs.existsSync(example)) fs.copyFileSync(example, rules);
+  else fs.writeFileSync(rules, JSON.stringify({ preTool: [] }, null, 2) + '\n', 'utf8');
+  return { file: rules, created: true };
+}
+function install(args) {
+  const host = args.host || (fs.existsSync(path.join(os.homedir(), '.claude')) ? 'claude' : 'codex');
+  const file = hostFile(host);
+  const dir = path.resolve(args.dir || '.');
+  const written = args.write === true;
+  const notes = [];
+  const result = { schema_version: 'skillcanary/hook-install/v1', host: host, file: file, written: written, notes: notes, block: '', ok: true };
+  if (!file) { result.ok = false; notes.push("unknown host: " + host + " (use --host claude|codex)"); return result; }
+  if (host === 'claude') {
+    result.block = JSON.stringify({ hooks: claudeWiring() }, null, 2);
+    if (written) {
+      fs.mkdirSync(path.dirname(file), { recursive: true });
+      const stamp = new Date().toISOString().replace(/[-:TZ.]/g, '').slice(0, 14);
+      const backup = file + '.bak-' + stamp;
+      if (fs.existsSync(file)) fs.copyFileSync(file, backup); else fs.writeFileSync(file, '{}\n', 'utf8');
+      const settings = fs.existsSync(file) ? JSON.parse(fs.readFileSync(file, 'utf8')) : {};
+      settings.hooks = settings.hooks || {};
+      let added = 0;
+      const wiring = claudeWiring();
+      for (const event of Object.keys(wiring)) {
+        const current = Array.isArray(settings.hooks[event]) ? settings.hooks[event] : [];
+        if (JSON.stringify(current).indexOf('skillcanary') === -1) { settings.hooks[event] = current.concat(wiring[event]); added += wiring[event].length; }
+      }
+      fs.writeFileSync(file, JSON.stringify(settings, null, 2) + '\n', 'utf8');
+      const rules = ensureRules(dir);
+      notes.push('backup: ' + backup);
+      notes.push('wired ' + added + ' hook entr(ies) into ' + file);
+      notes.push((rules.created ? 'created ' : 'kept ') + rules.file);
+    } else {
+      notes.push('dry run: nothing was written. Re-run with --write to apply after a backup.');
+    }
+  } else {
+    result.block = codexDispatcher();
+    if (written) {
+      fs.mkdirSync(path.dirname(file), { recursive: true });
+      fs.writeFileSync(file, codexDispatcher(), 'utf8');
+      const rules = ensureRules(dir);
+      notes.push('wrote dispatcher ' + file);
+      notes.push((rules.created ? 'created ' : 'kept ') + rules.file);
+      notes.push('Codex host wiring is owned by the host: point your hook config at this file the way ~/.codex/hooks/guard-codex.js is wired.');
+    } else {
+      notes.push('dry run: nothing was written. Re-run with --write to drop the dispatcher in place.');
+    }
+  }
+  notes.push('verify with: skillcanary hook doctor');
+  return result;
+}
+
 module.exports = function run(argv) {
   const args = parseArgs(argv);
   const event = args._[0];
   const input = readInput();
+
+  if (event === 'install') {
+    const result = install(args);
+    if (args.json) printJson(result);
+    else {
+      process.stdout.write('SkillCanary hook install (' + (result.written ? 'written' : 'dry run') + ') host=' + result.host + String.fromCharCode(10));
+      for (const note of result.notes) process.stdout.write('  ' + note + String.fromCharCode(10));
+      if (result.block) process.stdout.write(String.fromCharCode(10) + result.block + String.fromCharCode(10));
+    }
+    return result.ok ? 0 : 1;
+  }
 
   if (event === 'doctor') {
     const result = doctor();
@@ -129,9 +228,10 @@ module.exports = function run(argv) {
     return 0;
   }
 
-  process.stderr.write('Usage: skillcanary hook <doctor|session-start|pre-tool|stop|session-end>\n');
+  process.stderr.write('Usage: skillcanary hook <doctor|install|session-start|pre-tool|stop|session-end>\n');
   return 2;
 };
 
 module.exports.doctor = doctor;
+module.exports.install = install;
 module.exports.preTool = preTool;

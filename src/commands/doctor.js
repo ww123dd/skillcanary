@@ -2,6 +2,7 @@
 
 const fs = require('fs');
 const path = require('path');
+const os = require('os');
 const { parseArgs, printJson } = require('../lib/util');
 const report = require('./report');
 const hook = require('./hook');
@@ -30,6 +31,16 @@ function checkHook(checks, skillDir) {
   else add(checks, 'hook-rules', 'pass', result.rules + ' rule(s) validated', '');
 }
 
+function checkHookWiring(checks, skillDir) {
+  const rules = path.join(skillDir, '.skillcanary', 'hook-rules.json');
+  const claude = path.join(os.homedir(), '.claude', 'settings.json');
+  const codex = path.join(os.homedir(), '.codex', 'hooks', 'skillcanary-hook.js');
+  let wired = fs.existsSync(codex);
+  try { if (fs.existsSync(claude)) wired = wired || fs.readFileSync(claude, 'utf8').indexOf('skillcanary') !== -1; } catch (_) {}
+  if (wired && fs.existsSync(rules)) add(checks, 'hook-wiring', 'pass', 'a host calls skillcanary hook and the rules are present', '');
+  else if (wired) add(checks, 'hook-wiring', 'warn', 'a host calls skillcanary hook but .skillcanary/hook-rules.json is missing', 'skillcanary hook install --write');
+  else add(checks, 'hook-wiring', 'warn', 'no host hook calls skillcanary; it is the only automatic collector', 'skillcanary hook install --host claude --write');
+}
 function checkBudget(checks, skillDir) {
   const input = path.join(skillDir, '.skillcanary', 'outcomes.jsonl');
   if (!fs.existsSync(input)) {
@@ -136,6 +147,7 @@ module.exports = function run(argv) {
   else if (result.warnings.length) add(checks, 'skill-report', 'warn', result.warnings.join('; '), 'Review warnings or keep them explicit.');
   else add(checks, 'skill-report', 'pass', 'lint, anchor, gate and MCP checks passed', '');
   checkHook(checks, skillDir);
+  checkHookWiring(checks, skillDir);
   checkBudget(checks, skillDir);
   checkDrift(checks, skillDir);
   checkPolicy(checks, skillDir);

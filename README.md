@@ -24,15 +24,22 @@
 
 它不评模型，也不管你怎么跑。算不出来的事实，就不算通过。它也不会说「这个 skill 变好了」，只会说这道题关掉了、别的题没被弄坏。
 
-30 秒看它怎么问：
+30 秒先看它能用，再看你还缺什么：
+
+```
+
+接上唯一的自动采集器（默认 dry-run，不写任何东西）：
 
 ```bash
-# 不用 clone 也能试（不会装进系统）
-npx --yes git+https://gitee.com/review-for-qing-lazy/skillcanary.git doctor <你的 skill 目录>
-
-# 想看红 -> 绿 -> 再红，加一次漂移检测
+skillcanary hook install --host claude          # 先看它会写什么
+skillcanary hook install --host claude --write  # 备份后合并；再跑一次不会重复
+```bash
+# 1) 先看它工作：红 -> 绿 -> 再红（clone 下来跑，不装进系统）
 git clone https://gitee.com/review-for-qing-lazy/skillcanary
 cd skillcanary && npm run demo
+
+# 2) 再看你自己那个 skill 还缺什么
+npx --yes git+https://gitee.com/review-for-qing-lazy/skillcanary.git doctor <你的 skill 目录>
 ```
 
 ## 这套东西自己也在跑回归

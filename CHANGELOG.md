@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.9.1
+
+- Added `skillcanary hook install [--host codex|claude] [--write]`: the first action after installing. Dry run by default; `--write` backs the host file up, merges the four events (session start, pre-tool, stop, session end) and creates `.skillcanary/hook-rules.json`. Existing host hooks survive the merge and a second run is a no-op.
+- `doctor` gained `hook-wiring`: it reports whether a host actually calls the hook layer - the only automatic collector - and names the exact command when it does not.
+- Packaging: `docs/launch/**` and `docs/reading/**` can no longer ship in the tarball (negations in `files` plus a check that inspects `npm pack --dry-run`), and the launch drafts are out of the repository.
+- Redacted a literal local path in `docs/writing/a-real-regression.md` so the release privacy scan stays clean.
+
 ## 0.9.0
 
 - Added six-dimensional trajectory metrics with independent tool, parameter, utilization, recovery, plan and completion checks.

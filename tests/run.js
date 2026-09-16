@@ -300,6 +300,34 @@ async function testMockComment() {
   }
 }
 
+// hook install: dry run writes nothing, --write merges after a backup, second run is a no-op
+(function testHookInstall() {
+  const home = fs.mkdtempSync(path.join(os.tmpdir(), 'skillcanary-home-'));
+  const project = fs.mkdtempSync(path.join(os.tmpdir(), 'skillcanary-project-'));
+  fs.mkdirSync(path.join(home, '.claude'), { recursive: true });
+  fs.writeFileSync(path.join(home, '.claude', 'settings.json'), JSON.stringify({ hooks: { PreToolUse: [{ hooks: [{ type: 'command', command: 'node guard.js' }] }] } }, null, 2), 'utf8');
+  const env = { USERPROFILE: home, HOME: home };
+  let r = run(['hook', 'install', '--host', 'claude', '--dir', project, '--json'], env);
+  must(r.code === 0, 'hook install dry run must succeed: ' + r.err);
+  let report = JSON.parse(r.out);
+  must(report.written === false, 'dry run must report written:false');
+  must(!fs.existsSync(path.join(project, '.skillcanary', 'hook-rules.json')), 'dry run must not create hook rules');
+  const before = fs.readFileSync(path.join(home, '.claude', 'settings.json'), 'utf8');
+  r = run(['hook', 'install', '--host', 'claude', '--dir', project, '--write', '--json'], env);
+  must(r.code === 0, 'hook install --write must succeed: ' + r.err);
+  const settings = JSON.parse(fs.readFileSync(path.join(home, '.claude', 'settings.json'), 'utf8'));
+  must(JSON.stringify(settings.hooks).indexOf('skillcanary') !== -1, 'host settings must call skillcanary after --write');
+  must(JSON.stringify(settings.hooks.PreToolUse).indexOf('guard.js') !== -1, 'an existing host hook must survive the merge');
+  must(fs.existsSync(path.join(project, '.skillcanary', 'hook-rules.json')), '--write must create hook-rules.json');
+  must(fs.readdirSync(path.join(home, '.claude')).some(function (name) { return name.indexOf('settings.json.bak-') === 0; }), '--write must back the host file up');
+  const after1 = fs.readFileSync(path.join(home, '.claude', 'settings.json'), 'utf8');
+  must(after1 !== before, 'the first --write must change the host file');
+  r = run(['hook', 'install', '--host', 'claude', '--dir', project, '--write', '--json'], env);
+  must(fs.readFileSync(path.join(home, '.claude', 'settings.json'), 'utf8') === after1, 'a second --write must be a no-op');
+  const doctorOut = run(['hook', 'doctor', '--dir', project, '--json'], env);
+  must(doctorOut.code === 0, 'hook doctor must pass after --write');
+})();
+
 testMockComment().then(function () {
   console.log('SkillCanary tests passed');
 }).catch(function (err) {

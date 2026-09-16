@@ -1,5 +1,7 @@
 .github/
 docs/
+docs/launch/
+docs/reading/
 examples/
 tests/
 清单.md

@@ -33,4 +33,12 @@ Rules are configured in `.skillcanary/hook-rules.json`:
 
 The doctor fails on missing ids/reasons, duplicate ids and invalid regular expressions. A malformed guard must not silently become an allow.
 
-SkillCanary intentionally does not write host configuration files. Wire the command into Codex, Claude Code or another host according to that host's hook configuration. Keep environment-specific rules in your local `.skillcanary/hook-rules.json`; do not put credentials or internal tool names in the public repository.
+Wiring is explicit and dry-run by default:
+
+```bash
+skillcanary hook install --host claude            # prints the block, writes nothing
+skillcanary hook install --host claude --write    # backs the host file up, then merges
+skillcanary hook install --host codex --write     # drops a dispatcher into ~/.codex/hooks/
+```
+
+`--write` never happens as a side effect of another command, and the merge is idempotent: an existing host entry is kept and a second run changes nothing. Codex host wiring stays host-owned (point your config at the dispatcher the way your other hooks are wired). Keep environment-specific rules in your local `.skillcanary/hook-rules.json`; do not put credentials or internal tool names in the public repository.
