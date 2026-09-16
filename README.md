@@ -31,6 +31,7 @@
 ```bash
 skillcanary hook install --host claude          # 先看它会写什么
 skillcanary hook install --host claude --write  # 备份后合并；再跑一次不会重复
+# 默认只接采集（SessionStart/Stop/SessionEnd）；PreToolUse 与其它 guard 抢同一格，要用 --with-pre-tool 显式开启
 ```
 
 ```bash

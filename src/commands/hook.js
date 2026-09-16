@@ -41,11 +41,14 @@ function ruleMatches(rule, input) {
   catch (_) { return false; }
 }
 
+// A PreToolUse guard must keep its allow path silent: many hosts treat any output as
+// a decision, and another guard on the same event may merge or override it. Only a
+// matched rule produces a line here; everything else prints nothing.
 function preTool(input) {
   const rule = loadRules().rules.find(function (item) { return ruleMatches(item, input); });
   return rule
     ? { decision: 'deny', rule: rule.id || 'custom', reason: rule.reason || 'blocked by SkillCanary hook rule' }
-    : { decision: 'allow' };
+    : null;
 }
 
 function readArmor() {
@@ -106,14 +109,25 @@ function hostFile(host) {
   if (host === 'codex') return path.join(os.homedir(), '.codex', 'hooks', 'skillcanary-hook.js');
   return null;
 }
-function claudeWiring() {
+// Collection events are wired by default. PreToolUse is opt-in because it competes
+// with any other guard on the same event and because its allow path must be silent.
+const COLLECTION_EVENTS = ['session-start', 'stop', 'session-end'];
+function claudeWiring(events) {
+  const wanted = Array.isArray(events) && events.length ? events : COLLECTION_EVENTS;
   const matcher = "Bash|Read|Write|Edit|Grep|Glob|NotebookEdit|mcp__.*";
-  return {
-    SessionStart: [{ hooks: [{ type: 'command', command: commandFor('session-start') }] }],
-    PreToolUse: [{ matcher: matcher, hooks: [{ type: 'command', command: commandFor('pre-tool') }] }],
-    Stop: [{ hooks: [{ type: 'command', command: commandFor('stop') }] }],
-    SessionEnd: [{ hooks: [{ type: 'command', command: commandFor('session-end') }] }]
-  };
+  const wiring = {};
+  for (const event of wanted) {
+    if (event === 'session-start') wiring.SessionStart = [{ hooks: [{ type: 'command', command: commandFor('session-start') }] }];
+    else if (event === 'stop') wiring.Stop = [{ hooks: [{ type: 'command', command: commandFor('stop') }] }];
+    else if (event === 'session-end') wiring.SessionEnd = [{ hooks: [{ type: 'command', command: commandFor('session-end') }] }];
+    else if (event === 'pre-tool') wiring.PreToolUse = [{ matcher: matcher, hooks: [{ type: 'command', command: commandFor('pre-tool') }] }];
+  }
+  return wiring;
+}
+function wantedEvents(args) {
+  if (typeof args.events === 'string' && args.events.trim()) return args.events.split(',').map(function (e) { return e.trim(); }).filter(Boolean);
+  if (args['with-pre-tool'] === true) return COLLECTION_EVENTS.concat('pre-tool');
+  return COLLECTION_EVENTS.slice();
 }
 function ensureRules(dir) {
   const rules = path.join(dir, '.skillcanary', 'hook-rules.json');
@@ -132,8 +146,10 @@ function install(args) {
   const notes = [];
   const result = { schema_version: 'skillcanary/hook-install/v1', host: host, file: file, written: written, notes: notes, block: '', ok: true };
   if (!file) { result.ok = false; notes.push("unknown host: " + host + " (use --host claude|codex)"); return result; }
+  const wanted = wantedEvents(args);
+  result.events = wanted;
   if (host === 'claude') {
-    result.block = JSON.stringify({ hooks: claudeWiring() }, null, 2);
+    result.block = JSON.stringify({ hooks: claudeWiring(wanted) }, null, 2);
     if (written) {
       fs.mkdirSync(path.dirname(file), { recursive: true });
       const stamp = new Date().toISOString().replace(/[-:TZ.]/g, '').slice(0, 14);
@@ -141,16 +157,26 @@ function install(args) {
       if (fs.existsSync(file)) fs.copyFileSync(file, backup); else fs.writeFileSync(file, '{}\n', 'utf8');
       const settings = fs.existsSync(file) ? JSON.parse(fs.readFileSync(file, 'utf8')) : {};
       settings.hooks = settings.hooks || {};
-      let added = 0;
-      const wiring = claudeWiring();
-      for (const event of Object.keys(wiring)) {
+      let removed = 0;
+      for (const event of Object.keys(settings.hooks)) {
         const current = Array.isArray(settings.hooks[event]) ? settings.hooks[event] : [];
-        if (JSON.stringify(current).indexOf('skillcanary') === -1) { settings.hooks[event] = current.concat(wiring[event]); added += wiring[event].length; }
+        if (!current.length) continue;
+        settings.hooks[event] = current.filter(function (group) { return JSON.stringify(group).indexOf('skillcanary') === -1; });
+        removed += current.length - settings.hooks[event].length;
       }
-      fs.writeFileSync(file, JSON.stringify(settings, null, 2) + '\n', 'utf8');
+      const wiring = claudeWiring(wanted);
+      let added = 0;
+      for (const event of Object.keys(wiring)) {
+        settings.hooks[event] = (Array.isArray(settings.hooks[event]) ? settings.hooks[event] : []).concat(wiring[event]);
+        added += wiring[event].length;
+      }
+      const temp = file + '.tmp-' + Date.now();
+      fs.writeFileSync(temp, JSON.stringify(settings, null, 2) + '\n', 'utf8');
+      fs.renameSync(temp, file);
       const rules = ensureRules(dir);
       notes.push('backup: ' + backup);
-      notes.push('wired ' + added + ' hook entr(ies) into ' + file);
+      notes.push('wired ' + added + ' hook entr(ies) into ' + file + ' for ' + wanted.join(', ') + (removed ? ' (replaced ' + removed + ' existing skillcanary entr(ies))' : ''));
+      notes.push(wanted.indexOf('pre-tool') >= 0 ? 'PreToolUse is wired; keep its allow path silent and check no other guard competes.' : 'PreToolUse is not wired (opt-in with --with-pre-tool); collection needs no guard slot.');
       notes.push((rules.created ? 'created ' : 'kept ') + rules.file);
     } else {
       notes.push('dry run: nothing was written. Re-run with --write to apply after a backup.');
@@ -209,9 +235,14 @@ function verify(args) {
   const outcomes = path.join(dir, '.skillcanary', 'outcomes.jsonl');
   const before = fs.existsSync(outcomes) ? fs.readFileSync(outcomes, 'utf8').trim().split(/\r?\n/).filter(Boolean).length : 0;
   const results = [];
+  const required = COLLECTION_EVENTS;
   for (const event of Object.keys(EVENT_NAMES)) {
     const command = commands[event];
-    if (!command) { results.push({ event: event, wired: false, ok: false, note: 'not wired' }); continue; }
+    if (!command) {
+      const optional = required.indexOf(event) === -1;
+      results.push({ event: event, wired: false, ok: optional, note: optional ? 'not wired (opt-in)' : 'not wired' });
+      continue;
+    }
     const payload = event === 'session-end' ? { session_id: 'hook-verify-' + Date.now(), skill: 'skillcanary-selfcheck', skill_hash: 'verified', signals: { completed: true, failures: 0 } } : { tool_name: 'verify', command: 'true' };
     const result = require('child_process').spawnSync(command, { shell: true, input: JSON.stringify(payload), cwd: dir, encoding: 'utf8', windowsHide: true, timeout: 30000 });
     results.push({ event: event, wired: true, command: command, exit_code: typeof result.status === 'number' ? result.status : 1, ok: result.status === 0, note: String(result.stdout || result.stderr || '').trim().slice(0, 120) });
@@ -263,7 +294,8 @@ module.exports = function run(argv) {
   }
 
   if (event === 'pre-tool') {
-    process.stdout.write(JSON.stringify(preTool(input)) + '\n');
+    const decision = preTool(input);
+    if (decision) process.stdout.write(JSON.stringify(decision) + '\n');
     return 0;
   }
   if (event === 'session-start') {

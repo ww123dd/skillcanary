@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.17.0
+
+- `hook install` no longer takes the PreToolUse slot by default: it wires the collection events (SessionStart, Stop, SessionEnd) and leaves the guard slot alone. `--with-pre-tool` opts in, and re-wiring replaces the previous SkillCanary entries instead of appending duplicates.
+- The PreToolUse allow path is now silent: a matched rule prints a decision, everything else prints nothing, so SkillCanary cannot compete with another guard on the same event or feed a host an unexpected allow shape.
+- `hook verify` verifies the events that are actually wired and reports PreToolUse as optional instead of failing; the host write is atomic (temp file + rename) after the backup.
+
 ## 0.16.0
 
 - External regression set grown to 20 cases (36 -> 46 benchmark cases): five more published advisories with the fixed versions read from the OSV record rather than copied by hand - node-fetch 2.6.1, json5 2.2.2, semver 7.5.2, tough-cookie 4.1.3, cross-spawn 7.0.5 - each paired (before = must block, after = must pass).

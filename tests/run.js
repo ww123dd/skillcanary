@@ -122,7 +122,7 @@ fs.writeFileSync(path.join(hookDir, '.skillcanary', 'hook-rules.json'), JSON.str
 r = runHook(['hook', 'pre-tool'], hookDir, JSON.stringify({ command: 'BLOCK_ME' }));
 must(r.code === 0 && r.out.indexOf('"deny"') !== -1, 'hook pre-tool should deny\n' + r.out + r.err);
 r = runHook(['hook', 'pre-tool'], hookDir, JSON.stringify({ command: 'allowed' }));
-must(r.code === 0 && r.out.indexOf('"allow"') !== -1, 'hook pre-tool should allow\n' + r.out + r.err);
+must(r.code === 0 && r.out.trim() === '' && r.err.trim() === '', 'hook pre-tool must stay silent on allow\n' + r.out + r.err);
 r = runHook(['hook', 'session-end'], hookDir, JSON.stringify({ session_id: 's1', skill: 'demo', skill_hash: 'abc', signals: { completed: true } }));
 must(r.code === 0 && fs.existsSync(path.join(hookDir, '.skillcanary', 'outcomes.jsonl')), 'hook session-end should write outcome\n' + r.out + r.err);
 r = runHook(['hook', 'doctor'], hookDir, '');
@@ -330,6 +330,15 @@ async function testMockComment() {
   must(verifyOut.code === 0, 'hook verify must pass on a live wiring: ' + verifyOut.err + verifyOut.out);
   const verifyReport = JSON.parse(verifyOut.out);
   must(verifyReport.ok === true && verifyReport.recorded === true, 'hook verify must observe a real recorded outcome');
+  must(JSON.stringify(settings.hooks.PreToolUse || []).indexOf('skillcanary') === -1, 'default wiring must not take the PreToolUse slot');
+  r = run(['hook', 'install', '--host', 'claude', '--dir', project, '--with-pre-tool', '--write', '--json'], env);
+  must(r.code === 0 && JSON.parse(r.out).events.indexOf('pre-tool') !== -1, '--with-pre-tool must add PreToolUse');
+  let afterInstall = JSON.parse(fs.readFileSync(path.join(home, '.claude', 'settings.json'), 'utf8'));
+  must(JSON.stringify(afterInstall.hooks.PreToolUse || []).indexOf('skillcanary') !== -1, 'opt-in PreToolUse must be wired');
+  r = run(['hook', 'install', '--host', 'claude', '--dir', project, '--write', '--json'], env);
+  afterInstall = JSON.parse(fs.readFileSync(path.join(home, '.claude', 'settings.json'), 'utf8'));
+  must(JSON.stringify(afterInstall.hooks.PreToolUse || []).indexOf('skillcanary') === -1, 're-wiring without the flag must remove the PreToolUse entry');
+  must(JSON.stringify(afterInstall.hooks.SessionEnd || []).indexOf('skillcanary') !== -1, 'collection events must stay wired');
 })();
 
 // selfcheck records real runs: one cheap check, two trials, then read back the artifacts
