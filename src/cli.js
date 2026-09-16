@@ -27,6 +27,7 @@ const trajectory = require('./commands/trajectory');
 const reliability = require('./commands/reliability');
 const grader = require('./commands/grader');
 const execution = require('./commands/execution');
+const workflow = require('./commands/workflow');
 const golden = require('./commands/golden');
 const active = require('./commands/active');
 const drift = require('./commands/drift');
@@ -56,6 +57,7 @@ Usage:
   skillcanary reliability <estimate|compare|compose> ...
   skillcanary grader <calibrate|plan> ...
   skillcanary execution audit <workflow.json>
+  skillcanary workflow import <session.jsonl> [--output .skillcanary/workflow.json]
   skillcanary golden curate <candidates.jsonl> [--top 20]
   skillcanary active rank <advice.jsonl> [--top 10]
   skillcanary drift check [outcomes.jsonl] [--json]
@@ -92,6 +94,7 @@ Commands:
   budget       Derive session metrics and enforce error budgets.
   release      Check credentials, metadata and privacy before publishing.
   selfcheck    Run this repository own verifications and record the real runs as evidence.
+  workflow     Import a real agent session into a workflow record (tool metadata and input hashes only).
   init         Create .skillcanary/ examples in a repository.
 
 Exit codes:
@@ -134,6 +137,7 @@ function main(argv) {
     reliability,
     grader,
     execution,
+    workflow,
     golden,
     active,
     drift,

@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.13.0
+
+- Added `skillcanary workflow import <session.jsonl>`: it reads a real agent session, extracts the tool calls and writes `.skillcanary/workflow.json` in the shape the execution-mode audit consumes. Only tool names, risk classification and a sha256 of each input are written - raw commands and message text never leave the session file.
+- With a real workflow present, `doctor` execution-mode stops reporting "no workflow audit configured" and audits the modes actually recommended for those steps.
+
 ## 0.12.0
 
 - Added `skillcanary hook verify`: it fires each event through the command string the host configuration actually stores, then confirms the collector received a new outcome row. Structure is not proof - this is the live check, and it names `hook install --write` when something is missing.

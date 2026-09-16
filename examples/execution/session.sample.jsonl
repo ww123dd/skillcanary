@@ -1,0 +1,5 @@
+{"type":"assistant","message":{"content":[{"type":"tool_use","id":"call_1","name":"Read","input":{"file_path":"SKILL.md"}}]}}
+{"type":"assistant","message":{"content":[{"type":"tool_use","id":"call_2","name":"Bash","input":{"command":"npm test"}}]}}
+{"type":"assistant","message":{"content":[{"type":"tool_use","id":"call_3","name":"Edit","input":{"file_path":"SKILL.md","old_string":"a","new_string":"b"}}]}}
+{"type":"assistant","message":{"content":[{"type":"tool_use","id":"call_4","name":"Skill","input":{"skill":"数仓开发"}}]}}
+{"type":"assistant","message":{"content":[{"type":"tool_use","id":"call_5","name":"Bash","input":{"command":"rm -rf build"}}]}}

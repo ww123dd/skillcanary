@@ -1,6 +1,6 @@
 {
   "name": "skillcanary",
-  "version": "0.12.0",
+  "version": "0.13.0",
   "description": "Agent reliability control plane: trajectory metrics, pass^k, calibrated graders, execution-mode policy, adapter compatibility and evidence gates.",
   "license": "MIT",
   "type": "commonjs",
@@ -43,7 +43,8 @@
     "demo": "node scripts/demo-case.js",
     "demo:svg": "node scripts/build-demo-svg.js",
     "selfcheck": "node bin/skillcanary.js selfcheck --write",
-    "selfcheck:trials": "node bin/skillcanary.js selfcheck --trials 4 --write"
+    "selfcheck:trials": "node bin/skillcanary.js selfcheck --trials 4 --write",
+    "workflow:example": "node bin/skillcanary.js workflow import examples/execution/session.sample.jsonl --output .skillcanary/workflow.json"
   },
   "engines": {
     "node": ">=18"

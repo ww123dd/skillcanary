@@ -353,6 +353,24 @@ async function testMockComment() {
   must(JSON.parse(estimate.out).pass_power_k === 1, 'a stable pass^2 on real runs must report 1');
 })();
 
+// workflow import: real session -> workflow record, tool metadata only
+(function testWorkflowImport() {
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'skillcanary-workflow-'));
+  const out = path.join(dir, '.skillcanary', 'workflow.json');
+  const session = path.join(root, 'examples', 'execution', 'session.sample.jsonl');
+  let r = run(['workflow', 'import', session, '--output', out, '--json']);
+  must(r.code === 0, 'workflow import must succeed: ' + r.err + r.out);
+  const report = JSON.parse(r.out);
+  must(report.workflow.steps.length === 5, 'five tool calls must be imported');
+  must(report.recommendations.human_approval === 1 && report.recommendations.deterministic === 1 && report.recommendations.agent === 1, 'mode recommendations must follow the tools');
+  must(report.raw_inputs_written === false, 'raw tool inputs must never be written');
+  const written = fs.readFileSync(out, 'utf8');
+  must(written.indexOf('rm -rf build') === -1 && written.indexOf('SKILL.md') === -1 && written.indexOf('npm test') === -1, 'the workflow must not contain raw commands or paths');
+  must(written.indexOf('parameters_sha256') !== -1, 'each step must carry an input hash instead');
+  const audit = run(['execution', 'audit', out, '--json']);
+  must(audit.code === 0, 'the imported workflow must be auditable: ' + audit.err + audit.out);
+})();
+
 testMockComment().then(function () {
   console.log('SkillCanary tests passed');
 }).catch(function (err) {
