@@ -61,10 +61,10 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://gitee.com/review-for-qing-lazy/skillcanary.git"
+    "url": "https://github.com/ww123dd/skillcanary.git"
   },
   "bugs": {
-    "url": "https://gitee.com/review-for-qing-lazy/skillcanary/issues"
+    "url": "https://github.com/ww123dd/skillcanary/issues"
   },
   "homepage": "https://gitee.com/review-for-qing-lazy/skillcanary"
 }
