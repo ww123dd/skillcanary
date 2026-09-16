@@ -16,13 +16,18 @@ function expand(value) {
 
 function runCase(testCase) {
   const spec = testCase.run;
-  if (!spec || spec.type !== 'cli') return { code: 2, out: '', err: 'missing cli run spec' };
+  if (!spec || !spec.type) return { code: 2, out: '', err: 'missing run spec' };
   const args = (spec.args || []).map(expand);
-  const result = spawnSync(process.execPath, [cli].concat(args), {
+  const options = {
     cwd: spec.cwd ? path.resolve(root, expand(spec.cwd)) : root,
     encoding: 'utf8',
     env: Object.assign({}, process.env, spec.env || {})
-  });
+  };
+  let result;
+  if (spec.type === 'cli') result = spawnSync(process.execPath, [cli].concat(args), options);
+  else if (spec.type === 'node') result = spawnSync(process.execPath, [path.resolve(root, spec.script)].concat(args), options);
+  else if (spec.type === 'npm') result = spawnSync(process.platform === 'win32' ? 'npm.cmd' : 'npm', ['run', spec.script, '--silent'].concat(args), Object.assign({}, options, { shell: process.platform === 'win32' }));
+  else return { code: 2, out: '', err: 'unsupported run.type: ' + spec.type };
   return { code: result.status, out: result.stdout || '', err: result.stderr || '' };
 }
 

@@ -33,6 +33,21 @@ git clone https://gitee.com/review-for-qing-lazy/skillcanary
 cd skillcanary && npm run demo:case
 ```
 
+## 这套东西自己也在跑回归
+
+`benchmarks/real/` 里是真实回归用例。每条都有来源、改动、前后观测和一个**可执行的 run**——跑不过就是跑不过。按它自己的规矩：没有可执行 run 的用例不算证据，也不许编造别人的事故。
+
+```bash
+npm run benchmark:real            # 跑一遍，打印表格和失败详情
+npm run benchmark:real:validate   # 校验用例格式
+```
+
+current bench: 26
+
+这个数字由一条用例保证与用例表一致：改了用例不更新这里，基准就会红。
+
+其中几条来自这个项目自己的翻车——demo 里那句**永远不会失败的断言**、README 里那张**无法从代码复现的图**、以及发布前差点一起公开的规划文档。这三条现在都是回归用例。
+
 ---
 
 **A rule only works if it gets loaded. A mechanism does not.**

@@ -20,3 +20,13 @@ The runner substitutes `{root}` and `{tmp}` placeholders, runs the command and c
 ## Rule
 
 Do not anonymise away the evidence. Remove credentials and private business data, but keep the observable failure and state transition. Do not invent partner incidents or issue URLs.
+
+## Run specs
+
+Three kinds of executable spec are supported. A case must use one of them; there is no "documentation only" case.
+
+- `cli` — runs `bin/skillcanary.js` with `args` (the default shape);
+- `node` — runs `node <script>` with `args`, for checks that assert repository invariants;
+- `npm` — runs `npm run <script>`, for demos and builders that must keep working.
+
+`{root}` and `{tmp}` are substituted inside `args` and `cwd`.

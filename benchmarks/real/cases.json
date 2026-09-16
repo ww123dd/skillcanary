@@ -554,6 +554,111 @@
         ],
         "expect_exit": 0
       }
+    },
+    {
+      "id": "real-demo-red-green-red",
+      "source": "SkillCanary observed regression: the demo assertion compared the spawn error code instead of the exit status, so it could never fail",
+      "skill": "skillcanary",
+      "change": "Make the demo assert fail, pass, then fail again, and drift on a changed reference.",
+      "expected": "allow",
+      "before": {
+        "pass": 0,
+        "total": 1
+      },
+      "after": {
+        "pass": 1,
+        "total": 1
+      },
+      "notes": "A guard that cannot fail is worse than no guard: it reports success while proving nothing.",
+      "run": {
+        "type": "npm",
+        "script": "demo:case",
+        "expect_exit": 0
+      }
+    },
+    {
+      "id": "real-demo-svg-reproducible",
+      "source": "SkillCanary observed regression: the README image used to be a hand-written terminal mock with no link to the code",
+      "skill": "skillcanary",
+      "change": "Render assets/demo.svg from the real gate output, and refuse to render when the demo does not flip.",
+      "expected": "allow",
+      "before": {
+        "pass": 0,
+        "total": 1
+      },
+      "after": {
+        "pass": 1,
+        "total": 1
+      },
+      "notes": "The image in the README must be regenerable from the repository, byte for byte.",
+      "run": {
+        "type": "npm",
+        "script": "demo:svg",
+        "expect_exit": 0
+      }
+    },
+    {
+      "id": "real-private-docs-absent",
+      "source": "SkillCanary observed regression: the launch plan and checklist shipped inside the public repository",
+      "skill": "skillcanary",
+      "change": "Keep the planning documents outside the repository and fail if either is tracked again.",
+      "expected": "allow",
+      "before": {
+        "pass": 0,
+        "total": 1
+      },
+      "after": {
+        "pass": 1,
+        "total": 1
+      },
+      "notes": "Visitors should never read the project to-do list; it belongs next to the author, not in the package.",
+      "run": {
+        "type": "node",
+        "script": "benchmarks/real/checks/no-private-docs.js",
+        "expect_exit": 0
+      }
+    },
+    {
+      "id": "real-readme-shows-demo",
+      "source": "SkillCanary observed regression: the first screen described the category instead of showing a result",
+      "skill": "skillcanary",
+      "change": "Keep the red-to-green demo visible in the first screen, asserted by a check.",
+      "expected": "allow",
+      "before": {
+        "pass": 0,
+        "total": 1
+      },
+      "after": {
+        "pass": 1,
+        "total": 1
+      },
+      "notes": "A front page that only asks for faith converts nobody.",
+      "run": {
+        "type": "node",
+        "script": "benchmarks/real/checks/readme-shows-demo.js",
+        "expect_exit": 0
+      }
+    },
+    {
+      "id": "real-readme-benchmark-count",
+      "source": "SkillCanary observed regression: published numbers went stale as soon as the files changed",
+      "skill": "skillcanary",
+      "change": "Tie the benchmark count in the README to the real case list.",
+      "expected": "allow",
+      "before": {
+        "pass": 0,
+        "total": 1
+      },
+      "after": {
+        "pass": 1,
+        "total": 1
+      },
+      "notes": "A number in the README is a claim; a claim that nothing checks is a lie waiting to happen.",
+      "run": {
+        "type": "node",
+        "script": "benchmarks/real/checks/readme-benchmark-count.js",
+        "expect_exit": 0
+      }
     }
   ]
 }
