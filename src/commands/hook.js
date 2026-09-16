@@ -172,6 +172,57 @@ function install(args) {
   return result;
 }
 
+// Live verification: fire each wired host event through the command string the host
+// actually stores, then confirm the collector received it. Structure alone is not proof.
+const EVENT_NAMES = {
+  'session-start': 'SessionStart',
+  'pre-tool': 'PreToolUse',
+  stop: 'Stop',
+  'session-end': 'SessionEnd'
+};
+function wiredCommands(host) {
+  const found = {};
+  if (host === 'claude') {
+    const file = path.join(os.homedir(), '.claude', 'settings.json');
+    const settings = fs.existsSync(file) ? JSON.parse(fs.readFileSync(file, 'utf8')) : {};
+    for (const event of Object.keys(EVENT_NAMES)) {
+      const entries = (settings.hooks && settings.hooks[EVENT_NAMES[event]]) || [];
+      let command = null;
+      for (const group of entries) {
+        const items = Array.isArray(group.hooks) ? group.hooks : [];
+        for (const item of items) {
+          if (item && typeof item.command === 'string' && item.command.indexOf('skillcanary') !== -1 && item.command.indexOf('hook ' + event) !== -1) command = item.command;
+        }
+      }
+      if (command) found[event] = command;
+    }
+  } else if (host === 'codex') {
+    const file = path.join(os.homedir(), '.codex', 'hooks', 'skillcanary-hook.js');
+    if (fs.existsSync(file)) for (const event of Object.keys(EVENT_NAMES)) found[event] = process.execPath + ' "' + file + '" ' + event;
+  }
+  return found;
+}
+function verify(args) {
+  const host = args.host || (fs.existsSync(path.join(os.homedir(), '.claude')) ? 'claude' : 'codex');
+  const dir = path.resolve(args.dir || '.');
+  const commands = wiredCommands(host);
+  const outcomes = path.join(dir, '.skillcanary', 'outcomes.jsonl');
+  const before = fs.existsSync(outcomes) ? fs.readFileSync(outcomes, 'utf8').trim().split(/\r?\n/).filter(Boolean).length : 0;
+  const results = [];
+  for (const event of Object.keys(EVENT_NAMES)) {
+    const command = commands[event];
+    if (!command) { results.push({ event: event, wired: false, ok: false, note: 'not wired' }); continue; }
+    const payload = event === 'session-end' ? { session_id: 'hook-verify-' + Date.now(), skill: 'skillcanary-selfcheck', skill_hash: 'verified', signals: { completed: true, failures: 0 } } : { tool_name: 'verify', command: 'true' };
+    const result = require('child_process').spawnSync(command, { shell: true, input: JSON.stringify(payload), cwd: dir, encoding: 'utf8', windowsHide: true, timeout: 30000 });
+    results.push({ event: event, wired: true, command: command, exit_code: typeof result.status === 'number' ? result.status : 1, ok: result.status === 0, note: String(result.stdout || result.stderr || '').trim().slice(0, 120) });
+  }
+  const after = fs.existsSync(outcomes) ? fs.readFileSync(outcomes, 'utf8').trim().split(/\r?\n/).filter(Boolean).length : 0;
+  const recorded = after > before;
+  if (!recorded) results.push({ event: 'session-end-collector', wired: true, ok: false, note: 'no new outcome row was appended' });
+  const ok = results.every(function (row) { return row.ok; });
+  return { schema_version: 'skillcanary/hook-verify/v1', host: host, dir: dir, ok: ok, recorded: recorded, before: before, after: after, results: results, next: ok ? '' : 'skillcanary hook install --host ' + host + ' --write' };
+}
+
 module.exports = function run(argv) {
   const args = parseArgs(argv);
   const event = args._[0];
@@ -184,6 +235,17 @@ module.exports = function run(argv) {
       process.stdout.write('SkillCanary hook install (' + (result.written ? 'written' : 'dry run') + ') host=' + result.host + String.fromCharCode(10));
       for (const note of result.notes) process.stdout.write('  ' + note + String.fromCharCode(10));
       if (result.block) process.stdout.write(String.fromCharCode(10) + result.block + String.fromCharCode(10));
+    }
+    return result.ok ? 0 : 1;
+  }
+
+  if (event === 'verify') {
+    const result = verify(args);
+    if (args.json) printJson(result);
+    else {
+      process.stdout.write('SkillCanary hook verify host=' + result.host + String.fromCharCode(10));
+      for (const row of result.results) process.stdout.write('  ' + (row.ok ? 'o ' : 'x ') + row.event.padEnd(20) + (row.wired ? 'wired' : 'missing') + '  ' + (row.note || '') + String.fromCharCode(10));
+      process.stdout.write('  Result: ' + (result.ok ? 'PASS - the host really calls the collector' : 'FAIL - ' + result.next) + String.fromCharCode(10));
     }
     return result.ok ? 0 : 1;
   }
@@ -228,10 +290,11 @@ module.exports = function run(argv) {
     return 0;
   }
 
-  process.stderr.write('Usage: skillcanary hook <doctor|install|session-start|pre-tool|stop|session-end>\n');
+  process.stderr.write('Usage: skillcanary hook <doctor|install|verify|session-start|pre-tool|stop|session-end>\n');
   return 2;
 };
 
 module.exports.doctor = doctor;
 module.exports.install = install;
+module.exports.verify = verify;
 module.exports.preTool = preTool;

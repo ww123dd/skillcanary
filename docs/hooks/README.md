@@ -41,4 +41,10 @@ skillcanary hook install --host claude --write    # backs the host file up, then
 skillcanary hook install --host codex --write     # drops a dispatcher into ~/.codex/hooks/
 ```
 
+Verify the wiring end to end (it fires the command strings the host actually stores):
+
+```bash
+skillcanary hook verify
+```
+
 `--write` never happens as a side effect of another command, and the merge is idempotent: an existing host entry is kept and a second run changes nothing. Codex host wiring stays host-owned (point your config at the dispatcher the way your other hooks are wired). Keep environment-specific rules in your local `.skillcanary/hook-rules.json`; do not put credentials or internal tool names in the public repository.

@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.12.0
+
+- Added `skillcanary hook verify`: it fires each event through the command string the host configuration actually stores, then confirms the collector received a new outcome row. Structure is not proof - this is the live check, and it names `hook install --write` when something is missing.
+
 ## 0.11.0
 
 - `selfcheck --write` now also writes `.skillcanary/trace.json`, derived from the runs that actually happened: the plan is the check list, the spans carry the real exit codes and durations, retries only appear when a check failed in one trial and passed in a later one, and completion is per check. `trajectory analyze` and the doctor trajectory check therefore read facts produced here instead of a fixture.

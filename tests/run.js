@@ -326,6 +326,10 @@ async function testMockComment() {
   must(fs.readFileSync(path.join(home, '.claude', 'settings.json'), 'utf8') === after1, 'a second --write must be a no-op');
   const doctorOut = run(['hook', 'doctor', '--dir', project, '--json'], env);
   must(doctorOut.code === 0, 'hook doctor must pass after --write');
+  const verifyOut = run(['hook', 'verify', '--host', 'claude', '--dir', project, '--json'], env);
+  must(verifyOut.code === 0, 'hook verify must pass on a live wiring: ' + verifyOut.err + verifyOut.out);
+  const verifyReport = JSON.parse(verifyOut.out);
+  must(verifyReport.ok === true && verifyReport.recorded === true, 'hook verify must observe a real recorded outcome');
 })();
 
 // selfcheck records real runs: one cheap check, two trials, then read back the artifacts

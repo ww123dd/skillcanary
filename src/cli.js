@@ -49,7 +49,7 @@ Usage:
   skillcanary promote <advice.jsonl> --id <advice-id> [--validated]
   skillcanary armor [armor.jsonl] [--status blocking] [--json]
   skillcanary track --session <id> --skill <name> --hash <hash>
-  skillcanary hook <doctor|session-start|pre-tool|stop|session-end>
+  skillcanary hook <doctor|install|verify|session-start|pre-tool|stop|session-end>
   skillcanary policy <record|stats|recommend|pareto|drift|simulate> ...
   skillcanary adapter <list|detect|import|export|doctor> ...
   skillcanary trajectory analyze <trace.json> [--output metrics.json]
