@@ -36,7 +36,9 @@
     "reliability:example": "node bin/skillcanary.js reliability estimate examples/reliability/trials.jsonl --k 3",
     "grader:example": "node bin/skillcanary.js grader calibrate examples/grader/pairs.json --json",
     "execution:example": "node bin/skillcanary.js execution audit examples/execution/workflow.json",
-    "golden:example": "node bin/skillcanary.js golden curate examples/golden/candidates.jsonl --json"
+    "golden:example": "node bin/skillcanary.js golden curate examples/golden/candidates.jsonl --json",
+    "demo:case": "node scripts/demo-case.js",
+    "demo:svg": "node scripts/build-demo-svg.js"
   },
   "engines": {
     "node": ">=18"
