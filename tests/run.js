@@ -371,6 +371,25 @@ async function testMockComment() {
   must(audit.code === 0, 'the imported workflow must be auditable: ' + audit.err + audit.out);
 })();
 
+// decision record: the operator own words are required, and the row feeds policy
+(function testDecisionRecord() {
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'skillcanary-decision-'));
+  const log = path.join(dir, '.skillcanary', 'decisions.jsonl');
+  let r = run(['decision', 'record', '--summary', 'adopt the recorder', '--log', log, '--json']);
+  must(r.code === 1 && /own words/.test(r.err), 'a decision without the operator words must be refused');
+  must(!fs.existsSync(log), 'a refused decision must write nothing');
+  r = run(['decision', 'record', '--summary', 'adopt the recorder', '--quote', 'go ahead and adopt it', '--evidence', path.join(root, 'package.json'), '--log', log, '--dry-run', '--json']);
+  must(r.code === 0 && JSON.parse(r.out).dry_run === true, 'dry run must not write');
+  must(!fs.existsSync(log), 'dry run must leave no log');
+  r = run(['decision', 'record', '--summary', 'adopt the recorder', '--quote', 'go ahead and adopt it', '--action', 'keep', '--target', 'recorder', '--evidence', path.join(root, 'package.json'), '--log', log, '--json']);
+  must(r.code === 0, 'recording must succeed: ' + r.err);
+  const rows = fs.readFileSync(log, 'utf8').trim().split(/\r?\n/).map(JSON.parse);
+  must(rows.length === 1 && rows[0].authorization.quote === 'go ahead and adopt it', 'the operator words must be stored with the decision');
+  must(rows[0].outcome.evidence[0].sha256 && rows[0].reward_vector, 'evidence hash and reward vector must be recorded');
+  const recommend = run(['policy', 'recommend', '--log', log, '--json']);
+  must(recommend.code === 0, 'the recorded decision must feed the policy: ' + recommend.err);
+})();
+
 testMockComment().then(function () {
   console.log('SkillCanary tests passed');
 }).catch(function (err) {

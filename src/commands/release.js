@@ -23,7 +23,9 @@ function scanLeaks(repo) {
     { id: 'internal-mcp', re: /dolphinscheduler-readonly|doris-http/i }
   ];
   const hits = [];
-  const files = walkFiles(repo, { skip: ['_local_archive'] });
+  // .skillcanary/ is local working state (outcomes, evidence, imported workflows); it is
+  // gitignored and never shipped, and it legitimately holds absolute paths from this machine.
+  const files = walkFiles(repo, { skip: ['_local_archive', '.skillcanary', '.git', 'node_modules'] });
   const self = path.join(repo, 'src', 'commands', 'release.js');
   for (const file of files) {
     if (file === self) continue;

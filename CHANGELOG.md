@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.14.0
+
+- Added `skillcanary decision record`: it writes a `skillcanary/decision/v1` row (with reward vector and evidence hashes) from a real action. `--quote` is required and stored, so the tool can never invent the operator decision; without the words nothing is recorded.
+- `doctor` policy stops reporting "no decision history yet" once real decisions exist.
+
 ## 0.13.0
 
 - Added `skillcanary workflow import <session.jsonl>`: it reads a real agent session, extracts the tool calls and writes `.skillcanary/workflow.json` in the shape the execution-mode audit consumes. Only tool names, risk classification and a sha256 of each input are written - raw commands and message text never leave the session file.

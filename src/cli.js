@@ -16,6 +16,7 @@ const armor = require('./commands/armor');
 const track = require('./commands/track');
 const hook = require('./commands/hook');
 const policy = require('./commands/policy');
+const decision = require('./commands/decision');
 const evidence = require('./commands/evidence');
 const store = require('./commands/store');
 const budget = require('./commands/budget');
@@ -52,6 +53,7 @@ Usage:
   skillcanary track --session <id> --skill <name> --hash <hash>
   skillcanary hook <doctor|install|verify|session-start|pre-tool|stop|session-end>
   skillcanary policy <record|stats|recommend|pareto|drift|simulate> ...
+  skillcanary decision record --summary "<what changed>" --quote "<operator words>"
   skillcanary adapter <list|detect|import|export|doctor> ...
   skillcanary trajectory analyze <trace.json> [--output metrics.json]
   skillcanary reliability <estimate|compare|compose> ...
@@ -86,6 +88,7 @@ Commands:
   track        Append a post-change outcome record.
   hook         Host-agnostic hook adapter (stdin JSON, stdout JSON).
   policy       Record, simulate and learn from skill-improvement decisions.
+  decision     Record an operator decision (the operator own words are required).
   adapter      Normalize runner, scanner, trace, registry and MCP artifacts.
   active       Rank failure candidates by expected information value.
   drift        Detect non-stationary failure signals.
@@ -132,6 +135,7 @@ function main(argv) {
     track,
     hook,
     policy,
+    decision,
     adapter,
     trajectory,
     reliability,
