@@ -13,10 +13,10 @@ SkillCanary 把这个问题变成机械事实：**真实失败 → case → 证�
 
 30 秒看到结论：
 
-`ash
+```bash
 git clone https://gitee.com/review-for-qing-lazy/skillcanary
 cd skillcanary && node bin/skillcanary.js doctor examples/basic-skill
-`
+```
 
 ---
 
