@@ -1549,6 +1549,316 @@
         ],
         "expect_exit": 0
       }
+    },
+    {
+      "id": "real-ext-word-wrap-advisory-before",
+      "source": "https://api.osv.dev/v1/vulns/GHSA-j8xg-fqg3-53r7",
+      "skill": "external-rule:npm-advisory:word-wrap",
+      "change": "word-wrap vulnerable to Regular Expression Denial of Service (fixed in 1.2.4).",
+      "expected": "block",
+      "before": {
+        "pass": 0,
+        "total": 1
+      },
+      "after": {
+        "pass": 0,
+        "total": 1
+      },
+      "notes": "a word-wrap pin below 1.2.4 must be blocked",
+      "run": {
+        "type": "node",
+        "script": "benchmarks/real/checks/external-rules.js",
+        "args": [
+          "--rule",
+          "npm-advisory",
+          "--package",
+          "word-wrap",
+          "--fixed",
+          "1.2.4",
+          "--dir",
+          "{root}/benchmarks/real/fixtures/external/npm-advisory-word-wrap/before"
+        ],
+        "expect_exit": 1
+      }
+    },
+    {
+      "id": "real-ext-word-wrap-advisory-after",
+      "source": "https://api.osv.dev/v1/vulns/GHSA-j8xg-fqg3-53r7",
+      "skill": "external-rule:npm-advisory:word-wrap",
+      "change": "word-wrap vulnerable to Regular Expression Denial of Service (fixed in 1.2.4).",
+      "expected": "allow",
+      "before": {
+        "pass": 1,
+        "total": 1
+      },
+      "after": {
+        "pass": 1,
+        "total": 1
+      },
+      "notes": "word-wrap 1.2.4 must pass",
+      "run": {
+        "type": "node",
+        "script": "benchmarks/real/checks/external-rules.js",
+        "args": [
+          "--rule",
+          "npm-advisory",
+          "--package",
+          "word-wrap",
+          "--fixed",
+          "1.2.4",
+          "--dir",
+          "{root}/benchmarks/real/fixtures/external/npm-advisory-word-wrap/after"
+        ],
+        "expect_exit": 0
+      }
+    },
+    {
+      "id": "real-ext-braces-advisory-before",
+      "source": "https://api.osv.dev/v1/vulns/GHSA-grv7-fg5c-xmjg",
+      "skill": "external-rule:npm-advisory:braces",
+      "change": "Uncontrolled resource consumption in braces (fixed in 3.0.3).",
+      "expected": "block",
+      "before": {
+        "pass": 0,
+        "total": 1
+      },
+      "after": {
+        "pass": 0,
+        "total": 1
+      },
+      "notes": "a braces pin below 3.0.3 must be blocked",
+      "run": {
+        "type": "node",
+        "script": "benchmarks/real/checks/external-rules.js",
+        "args": [
+          "--rule",
+          "npm-advisory",
+          "--package",
+          "braces",
+          "--fixed",
+          "3.0.3",
+          "--dir",
+          "{root}/benchmarks/real/fixtures/external/npm-advisory-braces/before"
+        ],
+        "expect_exit": 1
+      }
+    },
+    {
+      "id": "real-ext-braces-advisory-after",
+      "source": "https://api.osv.dev/v1/vulns/GHSA-grv7-fg5c-xmjg",
+      "skill": "external-rule:npm-advisory:braces",
+      "change": "Uncontrolled resource consumption in braces (fixed in 3.0.3).",
+      "expected": "allow",
+      "before": {
+        "pass": 1,
+        "total": 1
+      },
+      "after": {
+        "pass": 1,
+        "total": 1
+      },
+      "notes": "braces 3.0.3 must pass",
+      "run": {
+        "type": "node",
+        "script": "benchmarks/real/checks/external-rules.js",
+        "args": [
+          "--rule",
+          "npm-advisory",
+          "--package",
+          "braces",
+          "--fixed",
+          "3.0.3",
+          "--dir",
+          "{root}/benchmarks/real/fixtures/external/npm-advisory-braces/after"
+        ],
+        "expect_exit": 0
+      }
+    },
+    {
+      "id": "real-ext-micromatch-advisory-before",
+      "source": "https://api.osv.dev/v1/vulns/GHSA-952p-6rrq-rcjv",
+      "skill": "external-rule:npm-advisory:micromatch",
+      "change": "Regular Expression Denial of Service (ReDoS) in micromatch (fixed in 4.0.8).",
+      "expected": "block",
+      "before": {
+        "pass": 0,
+        "total": 1
+      },
+      "after": {
+        "pass": 0,
+        "total": 1
+      },
+      "notes": "a micromatch pin below 4.0.8 must be blocked",
+      "run": {
+        "type": "node",
+        "script": "benchmarks/real/checks/external-rules.js",
+        "args": [
+          "--rule",
+          "npm-advisory",
+          "--package",
+          "micromatch",
+          "--fixed",
+          "4.0.8",
+          "--dir",
+          "{root}/benchmarks/real/fixtures/external/npm-advisory-micromatch/before"
+        ],
+        "expect_exit": 1
+      }
+    },
+    {
+      "id": "real-ext-micromatch-advisory-after",
+      "source": "https://api.osv.dev/v1/vulns/GHSA-952p-6rrq-rcjv",
+      "skill": "external-rule:npm-advisory:micromatch",
+      "change": "Regular Expression Denial of Service (ReDoS) in micromatch (fixed in 4.0.8).",
+      "expected": "allow",
+      "before": {
+        "pass": 1,
+        "total": 1
+      },
+      "after": {
+        "pass": 1,
+        "total": 1
+      },
+      "notes": "micromatch 4.0.8 must pass",
+      "run": {
+        "type": "node",
+        "script": "benchmarks/real/checks/external-rules.js",
+        "args": [
+          "--rule",
+          "npm-advisory",
+          "--package",
+          "micromatch",
+          "--fixed",
+          "4.0.8",
+          "--dir",
+          "{root}/benchmarks/real/fixtures/external/npm-advisory-micromatch/after"
+        ],
+        "expect_exit": 0
+      }
+    },
+    {
+      "id": "real-ext-qs-advisory-before",
+      "source": "https://api.osv.dev/v1/vulns/GHSA-hrpp-h998-j3pp",
+      "skill": "external-rule:npm-advisory:qs",
+      "change": "qs vulnerable to Prototype Pollution (fixed in 6.10.3).",
+      "expected": "block",
+      "before": {
+        "pass": 0,
+        "total": 1
+      },
+      "after": {
+        "pass": 0,
+        "total": 1
+      },
+      "notes": "a qs pin below 6.10.3 must be blocked",
+      "run": {
+        "type": "node",
+        "script": "benchmarks/real/checks/external-rules.js",
+        "args": [
+          "--rule",
+          "npm-advisory",
+          "--package",
+          "qs",
+          "--fixed",
+          "6.10.3",
+          "--dir",
+          "{root}/benchmarks/real/fixtures/external/npm-advisory-qs/before"
+        ],
+        "expect_exit": 1
+      }
+    },
+    {
+      "id": "real-ext-qs-advisory-after",
+      "source": "https://api.osv.dev/v1/vulns/GHSA-hrpp-h998-j3pp",
+      "skill": "external-rule:npm-advisory:qs",
+      "change": "qs vulnerable to Prototype Pollution (fixed in 6.10.3).",
+      "expected": "allow",
+      "before": {
+        "pass": 1,
+        "total": 1
+      },
+      "after": {
+        "pass": 1,
+        "total": 1
+      },
+      "notes": "qs 6.10.3 must pass",
+      "run": {
+        "type": "node",
+        "script": "benchmarks/real/checks/external-rules.js",
+        "args": [
+          "--rule",
+          "npm-advisory",
+          "--package",
+          "qs",
+          "--fixed",
+          "6.10.3",
+          "--dir",
+          "{root}/benchmarks/real/fixtures/external/npm-advisory-qs/after"
+        ],
+        "expect_exit": 0
+      }
+    },
+    {
+      "id": "real-ext-body-parser-advisory-before",
+      "source": "https://api.osv.dev/v1/vulns/GHSA-qwcr-r2fm-qrc7",
+      "skill": "external-rule:npm-advisory:body-parser",
+      "change": "body-parser vulnerable to denial of service when url encoding is enabled (fixed in 1.20.3).",
+      "expected": "block",
+      "before": {
+        "pass": 0,
+        "total": 1
+      },
+      "after": {
+        "pass": 0,
+        "total": 1
+      },
+      "notes": "a body-parser pin below 1.20.3 must be blocked",
+      "run": {
+        "type": "node",
+        "script": "benchmarks/real/checks/external-rules.js",
+        "args": [
+          "--rule",
+          "npm-advisory",
+          "--package",
+          "body-parser",
+          "--fixed",
+          "1.20.3",
+          "--dir",
+          "{root}/benchmarks/real/fixtures/external/npm-advisory-body-parser/before"
+        ],
+        "expect_exit": 1
+      }
+    },
+    {
+      "id": "real-ext-body-parser-advisory-after",
+      "source": "https://api.osv.dev/v1/vulns/GHSA-qwcr-r2fm-qrc7",
+      "skill": "external-rule:npm-advisory:body-parser",
+      "change": "body-parser vulnerable to denial of service when url encoding is enabled (fixed in 1.20.3).",
+      "expected": "allow",
+      "before": {
+        "pass": 1,
+        "total": 1
+      },
+      "after": {
+        "pass": 1,
+        "total": 1
+      },
+      "notes": "body-parser 1.20.3 must pass",
+      "run": {
+        "type": "node",
+        "script": "benchmarks/real/checks/external-rules.js",
+        "args": [
+          "--rule",
+          "npm-advisory",
+          "--package",
+          "body-parser",
+          "--fixed",
+          "1.20.3",
+          "--dir",
+          "{root}/benchmarks/real/fixtures/external/npm-advisory-body-parser/after"
+        ],
+        "expect_exit": 0
+      }
     }
   ]
 }

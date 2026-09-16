@@ -19,7 +19,7 @@
 - [x] PR comment mode and mocked API test
 - [x] JSONL output and query layer
 - [ ] `skillcanary explain` for every failure
-- [~] externally sourced regressions: 30 in place (fifteen public sources, each with a before/after pair); target 50-100
+- [~] externally sourced regressions: 40 in place (twenty public sources, each with a before/after pair); checkpoint at 40: further growth only when a case adds a new *kind* of external change; target 50-100
 
 ## v0.3 - Ecosystem
 

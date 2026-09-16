@@ -1,0 +1,6 @@
+{
+  "name": "skill",
+  "dependencies": {
+    "qs": "6.10.3"
+  }
+}

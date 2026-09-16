@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.19.0
+
+- External regression set grown to 40 cases (56 -> 66 benchmark cases): word-wrap 1.2.4, braces 3.0.3, micromatch 4.0.8, qs 6.10.3 and body-parser 1.20.3, each fixed version and summary read from the OSV record, each paired (before = must block, after = must pass).
+- All five again went in through the generic npm-advisory rule with no checker change: 40 external cases across 20 public sources now share one rule, one fixture shape and one before/after convention.
+
 ## 0.18.0
 
 - External regression set grown to 30 cases (46 -> 56 benchmark cases): five more advisories with the fixed version read from the OSV record - glob-parent 5.1.2, minimatch 3.0.5, ini 1.3.6, y18n 3.2.2, hosted-git-info 2.8.9 - each paired (before = must block, after = must pass).

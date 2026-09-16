@@ -1,0 +1,6 @@
+{
+  "name": "skill",
+  "dependencies": {
+    "braces": "3.0.3"
+  }
+}
