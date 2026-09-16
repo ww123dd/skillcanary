@@ -1,19 +1,22 @@
 # SkillCanary
 
-**规则告诉你这次这么改；机制要求你以后每次都还得这么过。SkillCanary 做的是后者。**
+**规则要靠「被加载」才生效。机制不靠。**
 
-同一个问题会换个样子回来。你把这次的答案写成一条规则，下次它换个形态，那条规则就不管用了。更麻烦的是规则没有判据：没人说得清哪条真的在起作用，于是没人敢删，只增不减，最后谁都不敢动。
+给 AI 写规则的人迟早会撞上同一堵墙：你以为规则生效了，其实它经常没被读到 —— 上下文太长被裁掉，任务不走那条路，懒加载到需要时已经晚了。**没被加载的规则，和没写过没区别。**
 
-机制不一样。它把失败变成一道题，让以后的每次改动都回来重考；这道题是可测的，判分靠能从外部重新算出来的事实，不靠谁的一句说明。
+接着是堆积。规则越沉淀越多，上下文越来越挤，AI 不是越来越听话，是越来越难用：注意力被稀释，规则之间开始互相打架。
 
-所以它对每一次改动只问四句：
+更难处理的是模型升级。你为弱模型写的那些「别这么干、必须那么干」，到了强模型身上就成了枷锁。规则约束的是过程，模型越强，越容易被旧规则拖住。
 
-1. **你在回答哪道题？** 答不上来，这就不是修复，只是一次编辑。
-2. **改之前，它是坏的吗？证据在哪？** 没有 baseline，你分不清「修好了」和「本来就没坏」。
-3. **改之后，是同一道题、同一套判据、重新跑出来的吗？别的题有没有被弄坏？** 换题、换判据、只跑一次，三个里踩中任何一个，这次通过都不算数。
-4. **三个月后这个结论还算数吗？** 判据漂了（用例改了、runner 换了、契约变了），旧结论就得作废，否则就是拿过期的事实给自己盖章。
+最要命的是你根本不知道改动有没有落实：规则加载了吗，执行了吗，结果是真的还是碰巧。
 
-四句都过了，才算这次改动有用；四句下来什么都没暴露，那这次改动大概率只是净增复杂度。它不评模型，也不管你怎么跑——算不出来的事实，就不算通过。它也不会说「这个 skill 变好了」，只会说这道题关掉了、别的题没被弄坏。
+你说「让 AI 记住，下次别再犯」。可「记住」本身也要靠加载和注意力，它还是会漏。
+
+所以这件事不该在规则上解决。把每一次翻车变成一道必须通过的题：AI 记不记得住不重要，它必须过了这道题才能合。**规则约束过程，机制约束结果** —— 模型越强，过题应该越容易，而不是越被旧规则捆住。
+
+它只问三件事：这次改的是哪道题；改之前它是不是坏的，证据在哪；改之后同一道题、同一套判据重跑，过了没有，别的题坏了没有。三个月后判据漂了，旧结论就作废。
+
+它不评模型，也不管你怎么跑。算不出来的事实，就不算通过。它也不会说「这个 skill 变好了」，只会说这道题关掉了、别的题没被弄坏。
 
 30 秒看它怎么问：
 
@@ -22,15 +25,17 @@ git clone https://gitee.com/review-for-qing-lazy/skillcanary
 cd skillcanary && node bin/skillcanary.js doctor examples/basic-skill
 ```
 
-最后一句也写在这儿：机制自己也会腐化。如果一条机制的维护成本已经高过它挡下的问题，它该退役，而不是继续加补丁。
-
 ---
 
-A rule tells you how to change it this time. A mechanism says you still have to pass this next time — and makes that pass/fail externally recomputable.
+**A rule only works if it gets loaded. A mechanism does not.**
 
-The same failure comes back in a different shape, so a rule written for the old shape stops working. Worse, rules carry no verdict: nobody can tell which one is doing the work, so nobody dares delete one, and the list only grows.
+Depending on load is the first wall. Your rule sits in a skill file or a prompt, you assume it is in effect, and half the time it is not: the context got truncated, the task never took that branch, or lazy loading came too late. A rule that was not loaded is no different from a rule that was never written.
 
-SkillCanary turns a failure into a case instead, and asks four questions of every change: which case does this answer; was the case failing before, and where is that evidence; does it pass the same case under the same criteria on a re-run, without breaking the others; and will that conclusion still hold when the criteria drift? Pass all four and the change counts. It does not rate models or run them, and it will not claim the skill got better in general — only that this case closed and nothing else regressed.
+Then comes the pile-up: more rules, less room, and an AI that gets harder to use rather than better behaved. Then the model upgrade: constraints you wrote for a weaker model become a cage around a stronger one. And through all of it you cannot tell whether a change actually landed.
+
+"Make the AI remember so it does not repeat the mistake" does not hold either, because remembering also depends on loading and attention.
+
+So do not solve it with another rule. Turn the failure into a case the change has to pass. Rules constrain the process; mechanisms constrain the result. SkillCanary asks three things — which case is this, was it failing before and where is that evidence, and does it pass the same case under the same criteria on a re-run without breaking the others.
 
 ## The pain it targets
 
