@@ -1239,6 +1239,316 @@
         ],
         "expect_exit": 0
       }
+    },
+    {
+      "id": "real-ext-glob-parent-advisory-before",
+      "source": "https://api.osv.dev/v1/vulns/GHSA-ww39-953v-wcq6",
+      "skill": "external-rule:npm-advisory:glob-parent",
+      "change": "glob-parent is vulnerable to regular expression denial of service (fixed in 5.1.2).",
+      "expected": "block",
+      "before": {
+        "pass": 0,
+        "total": 1
+      },
+      "after": {
+        "pass": 0,
+        "total": 1
+      },
+      "notes": "a glob-parent pin below 5.1.2 must be blocked",
+      "run": {
+        "type": "node",
+        "script": "benchmarks/real/checks/external-rules.js",
+        "args": [
+          "--rule",
+          "npm-advisory",
+          "--package",
+          "glob-parent",
+          "--fixed",
+          "5.1.2",
+          "--dir",
+          "{root}/benchmarks/real/fixtures/external/npm-advisory-glob-parent/before"
+        ],
+        "expect_exit": 1
+      }
+    },
+    {
+      "id": "real-ext-glob-parent-advisory-after",
+      "source": "https://api.osv.dev/v1/vulns/GHSA-ww39-953v-wcq6",
+      "skill": "external-rule:npm-advisory:glob-parent",
+      "change": "glob-parent is vulnerable to regular expression denial of service (fixed in 5.1.2).",
+      "expected": "allow",
+      "before": {
+        "pass": 1,
+        "total": 1
+      },
+      "after": {
+        "pass": 1,
+        "total": 1
+      },
+      "notes": "glob-parent 5.1.2 must pass",
+      "run": {
+        "type": "node",
+        "script": "benchmarks/real/checks/external-rules.js",
+        "args": [
+          "--rule",
+          "npm-advisory",
+          "--package",
+          "glob-parent",
+          "--fixed",
+          "5.1.2",
+          "--dir",
+          "{root}/benchmarks/real/fixtures/external/npm-advisory-glob-parent/after"
+        ],
+        "expect_exit": 0
+      }
+    },
+    {
+      "id": "real-ext-minimatch-advisory-before",
+      "source": "https://api.osv.dev/v1/vulns/GHSA-f8q6-p94x-37v3",
+      "skill": "external-rule:npm-advisory:minimatch",
+      "change": "minimatch is vulnerable to regular expression denial of service (fixed in 3.0.5).",
+      "expected": "block",
+      "before": {
+        "pass": 0,
+        "total": 1
+      },
+      "after": {
+        "pass": 0,
+        "total": 1
+      },
+      "notes": "a minimatch pin below 3.0.5 must be blocked",
+      "run": {
+        "type": "node",
+        "script": "benchmarks/real/checks/external-rules.js",
+        "args": [
+          "--rule",
+          "npm-advisory",
+          "--package",
+          "minimatch",
+          "--fixed",
+          "3.0.5",
+          "--dir",
+          "{root}/benchmarks/real/fixtures/external/npm-advisory-minimatch/before"
+        ],
+        "expect_exit": 1
+      }
+    },
+    {
+      "id": "real-ext-minimatch-advisory-after",
+      "source": "https://api.osv.dev/v1/vulns/GHSA-f8q6-p94x-37v3",
+      "skill": "external-rule:npm-advisory:minimatch",
+      "change": "minimatch is vulnerable to regular expression denial of service (fixed in 3.0.5).",
+      "expected": "allow",
+      "before": {
+        "pass": 1,
+        "total": 1
+      },
+      "after": {
+        "pass": 1,
+        "total": 1
+      },
+      "notes": "minimatch 3.0.5 must pass",
+      "run": {
+        "type": "node",
+        "script": "benchmarks/real/checks/external-rules.js",
+        "args": [
+          "--rule",
+          "npm-advisory",
+          "--package",
+          "minimatch",
+          "--fixed",
+          "3.0.5",
+          "--dir",
+          "{root}/benchmarks/real/fixtures/external/npm-advisory-minimatch/after"
+        ],
+        "expect_exit": 0
+      }
+    },
+    {
+      "id": "real-ext-ini-advisory-before",
+      "source": "https://api.osv.dev/v1/vulns/GHSA-qqgx-2p2h-9c37",
+      "skill": "external-rule:npm-advisory:ini",
+      "change": "ini is vulnerable to prototype pollution (fixed in 1.3.6).",
+      "expected": "block",
+      "before": {
+        "pass": 0,
+        "total": 1
+      },
+      "after": {
+        "pass": 0,
+        "total": 1
+      },
+      "notes": "a ini pin below 1.3.6 must be blocked",
+      "run": {
+        "type": "node",
+        "script": "benchmarks/real/checks/external-rules.js",
+        "args": [
+          "--rule",
+          "npm-advisory",
+          "--package",
+          "ini",
+          "--fixed",
+          "1.3.6",
+          "--dir",
+          "{root}/benchmarks/real/fixtures/external/npm-advisory-ini/before"
+        ],
+        "expect_exit": 1
+      }
+    },
+    {
+      "id": "real-ext-ini-advisory-after",
+      "source": "https://api.osv.dev/v1/vulns/GHSA-qqgx-2p2h-9c37",
+      "skill": "external-rule:npm-advisory:ini",
+      "change": "ini is vulnerable to prototype pollution (fixed in 1.3.6).",
+      "expected": "allow",
+      "before": {
+        "pass": 1,
+        "total": 1
+      },
+      "after": {
+        "pass": 1,
+        "total": 1
+      },
+      "notes": "ini 1.3.6 must pass",
+      "run": {
+        "type": "node",
+        "script": "benchmarks/real/checks/external-rules.js",
+        "args": [
+          "--rule",
+          "npm-advisory",
+          "--package",
+          "ini",
+          "--fixed",
+          "1.3.6",
+          "--dir",
+          "{root}/benchmarks/real/fixtures/external/npm-advisory-ini/after"
+        ],
+        "expect_exit": 0
+      }
+    },
+    {
+      "id": "real-ext-y18n-advisory-before",
+      "source": "https://api.osv.dev/v1/vulns/GHSA-c4w7-xm78-47vh",
+      "skill": "external-rule:npm-advisory:y18n",
+      "change": "y18n is vulnerable to prototype pollution (fixed in 3.2.2).",
+      "expected": "block",
+      "before": {
+        "pass": 0,
+        "total": 1
+      },
+      "after": {
+        "pass": 0,
+        "total": 1
+      },
+      "notes": "a y18n pin below 3.2.2 must be blocked",
+      "run": {
+        "type": "node",
+        "script": "benchmarks/real/checks/external-rules.js",
+        "args": [
+          "--rule",
+          "npm-advisory",
+          "--package",
+          "y18n",
+          "--fixed",
+          "3.2.2",
+          "--dir",
+          "{root}/benchmarks/real/fixtures/external/npm-advisory-y18n/before"
+        ],
+        "expect_exit": 1
+      }
+    },
+    {
+      "id": "real-ext-y18n-advisory-after",
+      "source": "https://api.osv.dev/v1/vulns/GHSA-c4w7-xm78-47vh",
+      "skill": "external-rule:npm-advisory:y18n",
+      "change": "y18n is vulnerable to prototype pollution (fixed in 3.2.2).",
+      "expected": "allow",
+      "before": {
+        "pass": 1,
+        "total": 1
+      },
+      "after": {
+        "pass": 1,
+        "total": 1
+      },
+      "notes": "y18n 3.2.2 must pass",
+      "run": {
+        "type": "node",
+        "script": "benchmarks/real/checks/external-rules.js",
+        "args": [
+          "--rule",
+          "npm-advisory",
+          "--package",
+          "y18n",
+          "--fixed",
+          "3.2.2",
+          "--dir",
+          "{root}/benchmarks/real/fixtures/external/npm-advisory-y18n/after"
+        ],
+        "expect_exit": 0
+      }
+    },
+    {
+      "id": "real-ext-hosted-git-info-advisory-before",
+      "source": "https://api.osv.dev/v1/vulns/GHSA-43f8-2h32-f4cj",
+      "skill": "external-rule:npm-advisory:hosted-git-info",
+      "change": "hosted-git-info is vulnerable to regular expression denial of service (fixed in 2.8.9).",
+      "expected": "block",
+      "before": {
+        "pass": 0,
+        "total": 1
+      },
+      "after": {
+        "pass": 0,
+        "total": 1
+      },
+      "notes": "a hosted-git-info pin below 2.8.9 must be blocked",
+      "run": {
+        "type": "node",
+        "script": "benchmarks/real/checks/external-rules.js",
+        "args": [
+          "--rule",
+          "npm-advisory",
+          "--package",
+          "hosted-git-info",
+          "--fixed",
+          "2.8.9",
+          "--dir",
+          "{root}/benchmarks/real/fixtures/external/npm-advisory-hosted-git-info/before"
+        ],
+        "expect_exit": 1
+      }
+    },
+    {
+      "id": "real-ext-hosted-git-info-advisory-after",
+      "source": "https://api.osv.dev/v1/vulns/GHSA-43f8-2h32-f4cj",
+      "skill": "external-rule:npm-advisory:hosted-git-info",
+      "change": "hosted-git-info is vulnerable to regular expression denial of service (fixed in 2.8.9).",
+      "expected": "allow",
+      "before": {
+        "pass": 1,
+        "total": 1
+      },
+      "after": {
+        "pass": 1,
+        "total": 1
+      },
+      "notes": "hosted-git-info 2.8.9 must pass",
+      "run": {
+        "type": "node",
+        "script": "benchmarks/real/checks/external-rules.js",
+        "args": [
+          "--rule",
+          "npm-advisory",
+          "--package",
+          "hosted-git-info",
+          "--fixed",
+          "2.8.9",
+          "--dir",
+          "{root}/benchmarks/real/fixtures/external/npm-advisory-hosted-git-info/after"
+        ],
+        "expect_exit": 0
+      }
     }
   ]
 }

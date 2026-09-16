@@ -1,0 +1,6 @@
+{
+  "name": "skill",
+  "dependencies": {
+    "hosted-git-info": "2.8.9"
+  }
+}

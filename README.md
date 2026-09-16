@@ -55,7 +55,7 @@ npm run benchmark:real:validate   # 校验用例格式
 npm run selfcheck:trials
 ```
 
-current bench: 46
+current bench: 56
 
 这个数字由一条用例保证与用例表一致：改了用例不更新这里，基准就会红。
 

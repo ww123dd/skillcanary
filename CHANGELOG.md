@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.18.0
+
+- External regression set grown to 30 cases (46 -> 56 benchmark cases): five more advisories with the fixed version read from the OSV record - glob-parent 5.1.2, minimatch 3.0.5, ini 1.3.6, y18n 3.2.2, hosted-git-info 2.8.9 - each paired (before = must block, after = must pass).
+- The generic `npm-advisory` rule carried all five without a checker change, which is the point of keeping advisory data in the case rather than in the code.
+
 ## 0.17.0
 
 - `hook install` no longer takes the PreToolUse slot by default: it wires the collection events (SessionStart, Stop, SessionEnd) and leaves the guard slot alone. `--with-pre-tool` opts in, and re-wiring replaces the previous SkillCanary entries instead of appending duplicates.

@@ -1,0 +1,6 @@
+{
+  "name": "skill",
+  "dependencies": {
+    "glob-parent": "5.1.1"
+  }
+}

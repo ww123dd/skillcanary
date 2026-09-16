@@ -1,0 +1,6 @@
+{
+  "name": "skill",
+  "dependencies": {
+    "y18n": "3.2.2"
+  }
+}

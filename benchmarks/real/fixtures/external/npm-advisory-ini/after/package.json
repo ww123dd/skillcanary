@@ -1,0 +1,6 @@
+{
+  "name": "skill",
+  "dependencies": {
+    "ini": "1.3.6"
+  }
+}
