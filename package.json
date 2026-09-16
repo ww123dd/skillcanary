@@ -38,6 +38,7 @@
     "execution:example": "node bin/skillcanary.js execution audit examples/execution/workflow.json",
     "golden:example": "node bin/skillcanary.js golden curate examples/golden/candidates.jsonl --json",
     "demo:case": "node scripts/demo-case.js",
+    "demo": "node scripts/demo-case.js",
     "demo:svg": "node scripts/build-demo-svg.js"
   },
   "engines": {
