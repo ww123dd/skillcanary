@@ -63,7 +63,7 @@ Usage:
   skillcanary store <index|query|export-sql> ...
   skillcanary budget <ingest|stats|check> ...
   skillcanary release preflight [--json]
-  skillcanary selfcheck [--write] [--json]
+  skillcanary selfcheck [--trials N] [--only <check>] [--write] [--json]
   skillcanary init [dir] [--with-action]
   skillcanary version
 

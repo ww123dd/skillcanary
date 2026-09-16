@@ -328,6 +328,27 @@ async function testMockComment() {
   must(doctorOut.code === 0, 'hook doctor must pass after --write');
 })();
 
+// selfcheck records real runs: one cheap check, two trials, then read back the artifacts
+(function testSelfcheck() {
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'skillcanary-selfcheck-'));
+  const env = { USERPROFILE: dir, HOME: dir };
+  let r = run(['selfcheck', '--only', 'lint-example', '--trials', '2', '--dir', root, '--json'], env);
+  must(r.code === 0, 'selfcheck read-only must pass: ' + r.err);
+  const dry = JSON.parse(r.out);
+  must(dry.runs.length === 2 && dry.trials === 2, 'two trials must produce two runs');
+  must(dry.recorded === false, 'without --write nothing is recorded');
+  r = run(['selfcheck', '--only', 'lint-example', '--trials', '2', '--dir', dir, '--write', '--json'], env);
+  must(r.code === 0, 'selfcheck --write must pass: ' + r.err);
+  const written = JSON.parse(r.out);
+  must(written.recorded === true, 'write mode must report recorded:true');
+  const trials = fs.readFileSync(path.join(dir, '.skillcanary', 'trials.jsonl'), 'utf8').trim().split(/\r?\n/).map(JSON.parse);
+  must(trials.length === 2 && trials[0].task_id === 'lint-example' && trials.every(function (t) { return t.pass === true; }), 'trials.jsonl must hold the real runs');
+  must(fs.readFileSync(path.join(dir, '.skillcanary', 'evidence.jsonl'), 'utf8').trim().split(/\r?\n/).length === 2, 'two evidence envelopes');
+  const estimate = run(['reliability', 'estimate', path.join(dir, '.skillcanary', 'trials.jsonl'), '--k', '2', '--json'], env);
+  must(estimate.code === 0, 'the recorded trials must feed the reliability report: ' + estimate.err);
+  must(JSON.parse(estimate.out).pass_power_k === 1, 'a stable pass^2 on real runs must report 1');
+})();
+
 testMockComment().then(function () {
   console.log('SkillCanary tests passed');
 }).catch(function (err) {

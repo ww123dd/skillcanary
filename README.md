@@ -49,6 +49,9 @@ npx --yes git+https://gitee.com/review-for-qing-lazy/skillcanary.git doctor <你
 ```bash
 npm run benchmark:real            # 跑一遍，打印表格和失败详情
 npm run benchmark:real:validate   # 校验用例格式
+
+# 让它跑自己：4 次真实执行 -> trials.jsonl -> 真实 Pass^4
+npm run selfcheck:trials
 ```
 
 current bench: 26

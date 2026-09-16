@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.10.0
+
+- `selfcheck --trials N` runs this repository own verifications N times and writes `.skillcanary/trials.jsonl` from the real runs, so `reliability estimate` and the doctor reliability check work on facts produced here instead of a fixture. `npm run selfcheck:trials` runs three trials; the summary prints the real Pass^k rate.
+- `selfcheck --only <check>` runs a single verification, which is what the suite uses to test the recorder without re-entering itself.
+
 ## 0.9.3
 
 - Added `skillcanary selfcheck [--write]`: runs this repository own verifications (suite, benchmark validate + real, the three release checks, and a lint pass) and, with `--write`, records each real run as an evidence envelope and an outcome row. `npm run selfcheck` is wired into CI.
