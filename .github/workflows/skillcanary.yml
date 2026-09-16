@@ -13,6 +13,7 @@ jobs:
         with:
           node-version: 20
       - run: npm test
+      - run: npm run selfcheck
       - run: node bin/skillcanary.js doctor examples/basic-skill
       - run: node bin/skillcanary.js adapter doctor
       - run: node bin/skillcanary.js policy simulate --horizon 25 --seed 7 --json

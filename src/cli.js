@@ -20,6 +20,7 @@ const evidence = require('./commands/evidence');
 const store = require('./commands/store');
 const budget = require('./commands/budget');
 const release = require('./commands/release');
+const selfcheck = require('./commands/selfcheck');
 const doctor = require('./commands/doctor');
 const adapter = require('./commands/adapter');
 const trajectory = require('./commands/trajectory');
@@ -62,6 +63,7 @@ Usage:
   skillcanary store <index|query|export-sql> ...
   skillcanary budget <ingest|stats|check> ...
   skillcanary release preflight [--json]
+  skillcanary selfcheck [--write] [--json]
   skillcanary init [dir] [--with-action]
   skillcanary version
 
@@ -89,6 +91,7 @@ Commands:
   store        Index evidence envelopes and query eval tables.
   budget       Derive session metrics and enforce error budgets.
   release      Check credentials, metadata and privacy before publishing.
+  selfcheck    Run this repository own verifications and record the real runs as evidence.
   init         Create .skillcanary/ examples in a repository.
 
 Exit codes:
@@ -138,6 +141,7 @@ function main(argv) {
     store,
     budget,
     release,
+    selfcheck,
     init
   };
   const fn = commands[cmd];

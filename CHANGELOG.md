@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.9.3
+
+- Added `skillcanary selfcheck [--write]`: runs this repository own verifications (suite, benchmark validate + real, the three release checks, and a lint pass) and, with `--write`, records each real run as an evidence envelope and an outcome row. `npm run selfcheck` is wired into CI.
+- Local collector state (`.skillcanary/`) is now ignored everywhere, so outcomes, evidence and the store never leak into the repository.
+
 ## 0.9.2
 
 - Fixed the suite version assertion: it reads `package.json` instead of a literal, so a patch bump cannot break `npm test` on a clean clone.

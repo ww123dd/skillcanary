@@ -1,4 +1,5 @@
 node_modules/
+.skillcanary/
 .DS_Store
 *.log
 .skillcanary/runs/
@@ -11,5 +12,3 @@ _local_archive/
 docs/reading/
 docs/launch-plan.md
 docs/launch-checklist.md
-.skillcanary/hook-rules.json
-.skillcanary/outcomes.jsonl
