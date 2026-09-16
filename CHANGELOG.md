@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.11.0
+
+- `selfcheck --write` now also writes `.skillcanary/trace.json`, derived from the runs that actually happened: the plan is the check list, the spans carry the real exit codes and durations, retries only appear when a check failed in one trial and passed in a later one, and completion is per check. `trajectory analyze` and the doctor trajectory check therefore read facts produced here instead of a fixture.
+
 ## 0.10.0
 
 - `selfcheck --trials N` runs this repository own verifications N times and writes `.skillcanary/trials.jsonl` from the real runs, so `reliability estimate` and the doctor reliability check work on facts produced here instead of a fixture. `npm run selfcheck:trials` runs three trials; the summary prints the real Pass^k rate.

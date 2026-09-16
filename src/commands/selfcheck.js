@@ -5,6 +5,7 @@ const crypto = require('crypto');
 const { spawnSync } = require('child_process');
 const { parseArgs, printJson, writeJson } = require('../lib/util');
 const reliability = require('../lib/reliability');
+const metrics = require('../lib/metrics');
 
 // Self-check: run this project's own verifications against itself and record what happened.
 //
@@ -53,6 +54,50 @@ function runCheck(dir, check) {
   };
 }
 
+// The trajectory dimensions come from the runs that just happened: the plan is the check
+// list, the execution is what actually ran, and retries are recorded only when a check
+// failed in one trial and passed in a later one.
+function buildTrace(selected, runs, trialRows, trials, runId, stamp) {
+  const ids = selected.map(function (check) { return check.id; });
+  const byTask = {};
+  for (const row of trialRows) { (byTask[row.task_id] = byTask[row.task_id] || []).push(row); }
+  const events = [];
+  for (const id of ids) {
+    const rows = (byTask[id] || []).slice().sort(function (a, b) { return a.trial_index - b.trial_index; });
+    let failed = false;
+    for (const row of rows) {
+      if (!row.pass) { failed = true; events.push({ type: 'tool_error', id: id, trial: row.trial_index, error: 'exit ' + row.metadata.exit_code }); }
+      else if (failed) { events.push({ type: 'retry', id: id, trial: row.trial_index }); failed = false; }
+    }
+  }
+  const spans = [{ id: 'plan', depth: 0 }].concat(ids.map(function (id) {
+    const rows = byTask[id] || [];
+    const allOk = rows.length > 0 && rows.every(function (row) { return row.pass; });
+    return { id: id, depth: 1, status: allOk ? 'ok' : 'error', tool: 'node', duration_ms: rows.reduce(function (sum, row) { return sum + row.latency_ms; }, 0) };
+  }));
+  return {
+    schema_version: 'skillcanary/trace/v1',
+    run_id: runId,
+    skill: 'skillcanary-selfcheck',
+    engine: 'node',
+    model: 'none',
+    observed_at: stamp,
+    task_id: 'skillcanary-selfcheck',
+    trial_id: 'trials-1..' + trials,
+    expected_tools: ids,
+    actual_tools: Array.from(new Set(runs.map(function (row) { return row.id; }))),
+    expected_parameters: { checks: ids.length, trials: trials },
+    actual_parameters: { checks: Array.from(new Set(runs.map(function (row) { return row.id; }))).length, trials: Math.max.apply(null, runs.map(function (row) { return row.trial_index; })) },
+    tool_results: runs.map(function (row) { return { id: row.id, trial: row.trial_index, exit_code: row.exit_code, duration_ms: row.duration_ms, stdout_sha256: row.stdout_sha256 }; }),
+    final_answer: runs.map(function (row) { return row.id + "#" + row.trial_index + " exit=" + row.exit_code + " " + row.duration_ms + "ms"; }).join("; "),
+    utilization_fields: ['exit_code', 'duration_ms'],
+    events: events,
+    spans: spans,
+    plan_options: { maxSteps: 64, maxDepth: 2 },
+    subgoals: ids.map(function (id) { return { id: id, critical: true, passed: (byTask[id] || []).every(function (row) { return row.pass; }) }; })
+  };
+}
+
 module.exports = function run(argv) {
   const args = parseArgs(argv);
   const dir = path.resolve(args.dir || '.');
@@ -82,6 +127,9 @@ module.exports = function run(argv) {
     }
   }
   const failed = runs.filter(function (row) { return !row.ok; });
+  const runId = 'selfcheck-' + stamp.replace(/[-:TZ.]/g, '').slice(0, 14);
+  const trace = buildTrace(selected, runs, trialRows, trials, runId, stamp);
+  const trajectory = metrics.computeMetrics(trace);
   const report = {
     schema_version: 'skillcanary/selfcheck/v1',
     generated_at: stamp,
@@ -92,6 +140,7 @@ module.exports = function run(argv) {
     runs: runs,
     trials: trials,
     reliability: reliability.reliabilityFromTrials(trialRows, trials),
+    trajectory: trajectory,
     passed: runs.length - failed.length,
     failed: failed.length,
     recorded: false
@@ -136,9 +185,11 @@ module.exports = function run(argv) {
     }
     fs.appendFileSync(evidenceFile, evidenceRows.map(function (row) { return JSON.stringify(row); }).join('\n') + '\n', 'utf8');
     fs.appendFileSync(outcomesFile, outcomeRows.map(function (row) { return JSON.stringify(row); }).join('\n') + '\n', 'utf8');
+    const traceFile = path.join(stateDir, 'trace.json');
+    writeJson(traceFile, trace);
     const trialsFile = path.join(stateDir, 'trials.jsonl');
     fs.writeFileSync(trialsFile, trialRows.map(function (row) { return JSON.stringify(row); }).join('\n') + '\n', 'utf8');
-    report.recorded_to = { selfcheck: selfcheckFile, evidence: evidenceFile, outcomes: outcomesFile, trials: trialsFile };
+    report.recorded_to = { selfcheck: selfcheckFile, evidence: evidenceFile, outcomes: outcomesFile, trials: trialsFile, trace: traceFile };
     report.recorded = true;
   }
 
@@ -147,6 +198,7 @@ module.exports = function run(argv) {
     process.stdout.write('SkillCanary selfcheck @ ' + dir + (write ? ' (recorded)' : ' (read only)') + '\n');
     for (const row of runs) process.stdout.write('  ' + (row.ok ? 'o ' : 'x ') + row.id.padEnd(28) + ' exit=' + row.exit_code + '  ' + row.duration_ms + 'ms  ' + row.tail.slice(0, 70) + '\n');
     process.stdout.write('  Result: ' + report.passed + '/' + runs.length + ' passed over ' + trials + ' trial(s)' + (write ? ' - recorded to .skillcanary/{selfcheck.json,evidence.jsonl,outcomes.jsonl,trials.jsonl}' : ' - add --write to record') + '\n');
+    process.stdout.write('  trajectory: ' + (trajectory.pass ? 'six dimensions pass' : 'failed') + ' (tools ' + trajectory.tool_selection.f1 + ', parameters ' + trajectory.parameter_extraction.pass_rate + ', utilization ' + trajectory.result_utilization.utilization + ', plan ' + trajectory.plan_coherence.steps + ' steps)' + '\n');
     if (trials > 1) {
       const unstable = report.reliability.task_rows.filter(function (task) { return task.pass_power_k !== 1; });
       const rate = report.reliability.pass_power_k;
