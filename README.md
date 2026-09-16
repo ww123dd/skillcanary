@@ -30,7 +30,7 @@ npx --yes git+https://gitee.com/review-for-qing-lazy/skillcanary.git doctor <你
 
 # 想看红 -> 绿 -> 再红，加一次漂移检测
 git clone https://gitee.com/review-for-qing-lazy/skillcanary
-cd skillcanary && npm run demo:case
+cd skillcanary && npm run demo
 ```
 
 ## 这套东西自己也在跑回归
