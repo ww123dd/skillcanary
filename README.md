@@ -1,55 +1,33 @@
 # SkillCanary
 
-**Agent / Skill 的错题本：每一次改动都要结账 —— 要么这道题真的关掉了，要么不许合。**
-**The mistake book for agent skills: every change settles a case, or it does not land.**
+**每次失败，不是在 skill 里再加一条规则，而是把它变成一道以后每次都要重考的题。**
 
-同一个失败会换一个新名字回来。你改了一条规则，CI 绿了，PR 合了；三天后它又出现 —— 这次你分不清：是规则从一开始就没生效，是模型换了，还是上次那次「修好了」本来就只是碰巧。
+同一个问题会换个名字回来。你把这次的答案写进规则里，下次它换个样子出现，那条规则就没用了。规则越堆越多，没人敢删，也没人说得清哪条真的在起作用。
 
-SkillCanary 给 agent / skill 的每一次自进化建一本错题本：
+规则说「这次这么改」，机制说「以后每次都还得这么过」。SkillCanary 做的是后者：把失败变成一道题，把判分做成一台机器。
 
-```text
-真实失败  →  抄成 case  →  门禁判分  →  记录结果  →  下一步该改哪
-            (可测的转变)   (证据+哈希)   (state/action/outcome)
-```
+真实失败先抄成一道题，题目是一次可测的转变；以后每次改动都要重做这道题，答案要能从外部重新算出来。这道题关掉了才算过，别的题没被弄坏才算过。
 
-- **抄题** —— 真实失败必须先变成 case 或确定性目标，才允许动 skill；没有题目，就没有资格改。
-- **判分** —— 改动要在同一道题上重测：证据带 provenance 和哈希，Pass^k 看它稳不稳，而不是看一次运气。
-- **防抄答案** —— 隐藏测试、参考答案收起、污点扫描：抄答案式通过不算通过。
-- **记账** —— 纠正 / 返工 / 工具错误三笔预算；债超了就停手，而不是继续加规则。
-- **复习** —— state / action / outcome 进历史，policy 告诉你下一步该改哪，而不是从记忆重建。
+它管的不是「这次改得对不对」，是「以后每次都还得对」。
 
-它不评模型，也不当 runner、扫描器或注册表 —— 那些工具回答「能不能跑」「安不安全」「怎么分发」。它只回答一句：
+它不评模型，也不管你怎么跑。它只认能从外部重算的事实：算不出来，就不算通过。所以它也不会说「这个 skill 变好了」，它只会说这道题关掉了、别的题没被弄坏。
 
-> **这次改动，是真的把这道题做对了，还是只是把答案改得像对的？**
-
-它不声称「这个 skill 普遍更好了」—— 那种话没有外部事实可以重算。它只证明：**这道题关掉了，别的题没有因此变坏。**
-
-30 秒看到结论：
+30 秒：
 
 ```bash
 git clone https://gitee.com/review-for-qing-lazy/skillcanary
 cd skillcanary && node bin/skillcanary.js doctor examples/basic-skill
 ```
 
+第一次跑，它就会告诉你：还有几道题没关，错误预算还剩多少，下一步该改哪里。
+
 ---
 
-**The mistake book for agent skills: every change settles a case, or it does not land.**
+Do not answer a failure with another rule. Turn it into a case the skill has to pass again.
 
-The same failure comes back under a new name. You changed one rule, CI went green, the PR merged; three days later it is back — and you cannot tell whether the rule never worked, the model changed, or last time was luck.
+A rule says "change it like this". A mechanism says "you still have to pass this next time". SkillCanary builds the second one: the failure becomes a case, and the grading becomes a machine. The case has to close on externally recomputable evidence, and nothing else may regress.
 
-SkillCanary keeps a mistake book for every self-evolution step of an agent or skill:
-
-- **Write the problem down** — a real failure must become a case or a deterministic target before the skill may change.
-- **Grade the same problem** — the change is re-tested on that case with provenance and hashes; pass^k says whether it holds up, not whether it was lucky once.
-- **Block copying answers** — hidden tests, stashed solutions and taint scanning: passing by copying is not passing.
-- **Keep the ledger** — correction, rework and tool-error budgets; when the debt is over budget you stop, instead of adding another rule.
-- **Review** — state / action / outcome go into history and policy tells you what to fix next, instead of rebuilding from memory.
-
-It does not rate models and is not a runner, scanner or registry. Those answer *can it run*, *is it safe*, *how do we distribute it*. It answers one thing:
-
-> **Did this change actually solve the case — or did it just make the answer look right?**
-
-It does not claim the skill is now better in general: that has no external fact to recompute. It proves the case is closed and nothing else regressed.
+It does not rate models or run them. If the fact cannot be recomputed from outside, it does not count as passing.
 
 ## The pain it targets
 
