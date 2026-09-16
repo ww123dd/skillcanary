@@ -26,7 +26,7 @@ fs.cpSync(path.join(repo, 'examples/basic-skill'), tmpSkill, { recursive: true }
 fs.appendFileSync(path.join(tmpSkill, 'references/guide.md'), 'changed');
 const drift = spawnSync(process.execPath, [cli, 'anchor', tmpSkill, '--check'], { cwd: repo, encoding: 'utf8' });
 const driftText = ((drift.stdout || '') + (drift.stderr || '')).trim();
-if (bad.code === 0 || good.code !== 0 || broken.code === 0 || drift.code === 0) { console.error('refusing to render: the demo does not flip red-green-red or does not drift'); process.exit(1); }
+if (bad.code === 0 || good.code !== 0 || broken.code === 0 || drift.status === 0) { console.error('refusing to render: the demo does not flip red-green-red or does not drift'); process.exit(1); }
 const rows = [];
 let y = 96;
 function row(text, color, size) { rows.push('<text x="28" y="' + y + '" fill="' + color + '" font-size="' + (size || 16) + '">' + esc(text) + '</text>'); y += 26; }
@@ -45,7 +45,7 @@ y += 18;
 y += 18;
 row('$ skillcanary anchor <skill> --check   (one reference file changed)', '#8b949e', 15);
 reasons(driftText).forEach(function (l) { row(l, '#f85149'); });
-row('Result: DRIFT ' + /DRIFT (\d+)/.exec(driftText)[1] + ' (exit ' + drift.code + ')', '#f85149', 17);
+row('Result: DRIFT ' + /DRIFT (\d+)/.exec(driftText)[1] + ' (exit ' + drift.status + ')', '#f85149', 17);
 y += 18;
 row('same case - pass only while the change can prove what it fixed', '#8b949e', 15);
 row('Reproduce: npm run demo:case', '#58a6ff', 15);

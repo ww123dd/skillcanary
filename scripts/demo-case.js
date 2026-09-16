@@ -47,9 +47,9 @@ console.log('');
 console.log('step 4/4  change one reference file of the skill itself');
 console.log('  $ skillcanary anchor <skill> --check');
 lines(driftText, /^\s*[x!]/).forEach(function (l) { console.log('  ' + l); });
-console.log('  Result: ' + (/DRIFT/.test(driftText) ? 'DRIFT' : 'IN_SYNC') + ' (exit ' + drift.code + ')');
+console.log('  Result: ' + (/DRIFT/.test(driftText) ? 'DRIFT' : 'IN_SYNC') + ' (exit ' + drift.status + ')');
 console.log('');
-if (bad.code === 0 || good.code !== 0 || broken.code === 0 || drift.code === 0) {
+if (bad.code === 0 || good.code !== 0 || broken.code === 0 || drift.status === 0) {
   console.error('DEMO BROKEN: expected fail, pass, fail again, and drift.');
   process.exit(1);
 }
