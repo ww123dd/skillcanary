@@ -1,6 +1,6 @@
 {
   "name": "skillcanary",
-  "version": "0.19.0",
+  "version": "0.19.1",
   "description": "Agent reliability control plane: trajectory metrics, pass^k, calibrated graders, execution-mode policy, adapter compatibility and evidence gates.",
   "license": "MIT",
   "type": "commonjs",
@@ -20,7 +20,7 @@
     "!docs/reading"
   ],
   "scripts": {
-    "test": "node tests/run.js",
+    "test": "node tests/run.js && node tests/sampling-boundary.js",
     "benchmark": "node benchmarks/run.js",
     "benchmark:json": "node benchmarks/run.js --json",
     "benchmark:real": "node benchmarks/real/run.js",

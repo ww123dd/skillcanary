@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.19.1
+
+- Fixed the Beta/Gamma boundary bug: `sampleBeta(alpha<1/3, ...)` returned `NaN` because the Marsaglia-Tsang sampler was used below its valid shape range. `sampleGamma` now uses the standard `Gamma(shape+1) * U^(1/shape)` boost for `shape < 1`, and `sampleBeta` refuses non-positive parameters.
+- Added `tests/sampling-boundary.js`: 200 seeded draws for each of `0.01`, `0.1`, `0.3`, `0.34`, `1`, `2`; boundary pairs; invalid-parameter refusal; seed reproducibility. It runs in `npm test`.
 ## 0.19.0
 
 - External regression set grown to 40 cases (56 -> 66 benchmark cases): word-wrap 1.2.4, braces 3.0.3, micromatch 4.0.8, qs 6.10.3 and body-parser 1.20.3, each fixed version and summary read from the OSV record, each paired (before = must block, after = must pass).
