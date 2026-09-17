@@ -1,5 +1,7 @@
 # SkillCanary
 
+> SkillCanary 是稳定的门禁层；公开、可 clone 复算的信任根与生命周期记录在 [AutoArmory](https://github.com/ww123dd/autoarmory)（[Gitee](https://gitee.com/review-for-qing-lazy/autoarmory)）。
+
 **规则要靠「被加载」才生效。机制不靠。**
 
 给 AI 写规则的人迟早会撞上同一堵墙：你以为规则生效了，其实它经常没被读到 —— 上下文太长被裁掉，任务不走那条路，懒加载到需要时已经晚了。**没被加载的规则，和没写过没区别。**

@@ -62,7 +62,9 @@
     "provenance",
     "policy",
     "evidence",
-    "drift"
+    "drift",
+    "change-gate",
+    "trust-root"
   ],
   "repository": {
     "type": "git",
@@ -71,5 +73,8 @@
   "bugs": {
     "url": "https://github.com/ww123dd/skillcanary/issues"
   },
-  "homepage": "https://gitee.com/review-for-qing-lazy/skillcanary"
+  "homepage": "https://gitee.com/review-for-qing-lazy/skillcanary",
+  "publishConfig": {
+    "access": "public"
+  }
 }
